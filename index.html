@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOUS – test inteligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f5f2ea; --card:#fffdf8; --ink:#1d2433; --ink2:#4a5366; --mute:#8a91a0;
+  --line:#e2ddd0; --accent:#2f6f6a; --accent2:#e3efec; --gold:#b8862b; --gold2:#f6ecd8;
+  --red:#b5523b; --red2:#f7e5df; --green:#3d7a46; --green2:#e3f0e3;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:16px;line-height:1.55}
+body{background-image:radial-gradient(circle at 1px 1px, rgba(29,36,51,.06) 1px, transparent 0);background-size:22px 22px;min-height:100vh}
+h1,h2,h3{font-family:"Fraunces",Georgia,serif;font-weight:600;line-height:1.2;margin:0 0 .5em}
+h1{font-size:clamp(2rem,5vw,3.2rem);letter-spacing:-.01em}
+h2{font-size:1.6rem}
+h3{font-size:1.2rem}
+p{margin:.4em 0 .9em}
+.wrap{max-width:860px;margin:0 auto;padding:28px 18px 80px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;box-shadow:0 1px 0 rgba(0,0,0,.02),0 10px 30px -18px rgba(29,36,51,.25)}
+.card+.card{margin-top:18px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.6em}
+.muted{color:var(--ink2)}
+.small{font-size:.88rem}
+.btn{appearance:none;border:0;background:var(--ink);color:#fff;font:600 1rem "IBM Plex Sans";padding:13px 24px;border-radius:999px;cursor:pointer;transition:transform .08s, background .2s}
+.btn:hover{background:#2c3650}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.ghost:hover{border-color:var(--ink)}
+.btn.accent{background:var(--accent)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.between{justify-content:space-between}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}.card{padding:20px}}
+label.f{display:block;font-weight:600;font-size:.92rem;margin-bottom:6px}
+input[type=text],input[type=number],select{width:100%;font:inherit;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent2)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;cursor:pointer;font-size:.92rem;user-select:none}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.req{color:var(--red)}
+.err{color:var(--red);font-size:.88rem;min-height:1.2em}
+/* top bar */
+.topbar{position:sticky;top:0;z-index:5;background:rgba(245,242,234,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.topbar .in{max-width:860px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:14px}
+.logo{font-family:"Fraunces";font-weight:700;letter-spacing:.08em}
+.prog{flex:1;height:6px;background:var(--line);border-radius:9px;overflow:hidden}
+.prog>i{display:block;height:100%;background:var(--accent);transition:width .4s}
+.timer{font-family:"IBM Plex Mono";font-size:.95rem;padding:4px 10px;border-radius:8px;background:var(--accent2);color:var(--accent);min-width:64px;text-align:center}
+.timer.warn{background:var(--red2);color:var(--red)}
+/* items */
+.q{font-size:1.25rem;font-weight:500;margin:6px 0 18px}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opt{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:13px 16px;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:border-color .15s, background .15s}
+.opt:hover{border-color:var(--ink2)}
+.opt.on{border-color:var(--accent);background:var(--accent2);box-shadow:inset 0 0 0 1px var(--accent)}
+.opts.img{grid-template-columns:repeat(4,1fr)}
+.opts.img .opt{padding:6px;display:flex;flex-direction:column;align-items:center}
+.opts.img .opt small{font-family:"IBM Plex Mono";color:var(--mute);font-size:.72rem}
+@media(max-width:560px){.opts{grid-template-columns:1fr}.opts.img{grid-template-columns:repeat(4,1fr);gap:6px}}
+.dots{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
+.dot{width:26px;height:26px;border-radius:7px;border:1.5px solid var(--line);background:#fff;font:500 .72rem "IBM Plex Mono";cursor:pointer;color:var(--ink2)}
+.dot.done{background:var(--ink);color:#fff;border-color:var(--ink)}
+.dot.cur{outline:2px solid var(--accent);outline-offset:1px}
+.matrix{display:grid;grid-template-columns:repeat(3,1fr);gap:0;max-width:330px;margin:0 auto 18px;border:2px solid var(--ink);background:#fff}
+.matrix>div{border:1px solid #d6d2c6;aspect-ratio:1;display:flex;align-items:center;justify-content:center}
+.matrix svg,.opt svg{width:100%;height:auto;display:block}
+.qm{font-family:"Fraunces";font-size:2.6rem;color:var(--accent)}
+.bigdigit{font-family:"Fraunces";font-size:6rem;text-align:center;min-height:9rem;display:flex;align-items:center;justify-content:center}
+.numinput{font-family:"IBM Plex Mono";font-size:1.6rem;letter-spacing:.3em;text-align:center}
+.series{font-family:"IBM Plex Mono";font-size:1.6rem;text-align:center;margin:10px 0 20px;letter-spacing:.04em;word-spacing:.2em}
+.premise{background:var(--paper);border-left:3px solid var(--accent);padding:10px 14px;border-radius:0 10px 10px 0;margin-bottom:6px}
+.concl{font-weight:600;margin:14px 0 16px}
+.sym{width:52px;height:52px;display:inline-block}
+.symrow{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.targets{display:flex;gap:10px;justify-content:center;padding:10px 16px;border:2px solid var(--ink);border-radius:12px;background:#fff}
+.searchbox{display:flex;gap:4px;justify-content:center;padding:10px;border:1.5px dashed var(--mute);border-radius:12px;background:#fff}
+.key{display:grid;grid-template-columns:repeat(9,1fr);border:2px solid var(--ink);border-radius:10px;overflow:hidden;background:#fff;max-width:520px;margin:0 auto}
+.key>div{border-right:1px solid var(--line);text-align:center;padding:4px 0}
+.key>div:last-child{border-right:0}
+.key b{display:block;border-top:1px solid var(--line);font-family:"IBM Plex Mono";padding-top:2px}
+.pad{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;max-width:520px;margin:18px auto 0}
+.pad button{padding:14px 0;font:600 1.2rem "IBM Plex Mono";border:1.5px solid var(--line);background:#fff;border-radius:10px;cursor:pointer}
+.pad button:active{background:var(--accent2)}
+@media(max-width:560px){.pad{grid-template-columns:repeat(5,1fr)}}
+.flash-ok{animation:fok .3s}
+.flash-bad{animation:fbad .3s}
+@keyframes fok{0%{background:var(--green2)}100%{background:var(--card)}}
+@keyframes fbad{0%{background:var(--red2)}100%{background:var(--card)}}
+.example{background:var(--gold2);border-radius:12px;padding:14px 16px;margin:12px 0}
+ul.clean{padding-left:1.1em;margin:.3em 0}
+ul.clean li{margin:.25em 0}
+/* results */
+.hero{text-align:center;padding:36px 24px}
+.iq{font-family:"Fraunces";font-size:clamp(4.5rem,14vw,7.5rem);font-weight:700;line-height:1;color:var(--ink)}
+.cat{display:inline-block;margin-top:8px;padding:6px 14px;border-radius:999px;background:var(--accent2);color:var(--accent);font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
+.kpi{background:var(--paper);border-radius:12px;padding:12px}
+.kpi b{display:block;font-family:"Fraunces";font-size:1.5rem}
+.kpi span{font-size:.8rem;color:var(--ink2)}
+@media(max-width:560px){.kpis{grid-template-columns:1fr}}
+.prow{display:grid;grid-template-columns:190px 1fr 46px;gap:12px;align-items:center;margin:12px 0}
+.prow .lbl{font-weight:600;font-size:.95rem}
+.prow .lbl small{display:block;font-weight:400;color:var(--mute);font-size:.75rem}
+.track{position:relative;height:30px}
+.track .zone{position:absolute;top:8px;height:14px;background:var(--line);border-radius:4px}
+.track .base{position:absolute;top:14px;height:2px;left:0;right:0;background:var(--line)}
+.track .mid{position:absolute;top:2px;bottom:2px;width:1px;background:var(--mute)}
+.track .bar{position:absolute;top:10px;height:10px;border-radius:5px}
+.track .pt{position:absolute;top:6px;width:18px;height:18px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1.5px var(--ink);transform:translateX(-50%)}
+.prow .val{font-family:"Fraunces";font-weight:700;font-size:1.25rem;text-align:right}
+@media(max-width:560px){.prow{grid-template-columns:1fr 46px}.prow .track{grid-column:1/3;grid-row:2}}
+.scale{display:flex;justify-content:space-between;font:500 .7rem "IBM Plex Mono";color:var(--mute);margin-left:202px;margin-right:58px}
+@media(max-width:560px){.scale{margin-left:0;margin-right:0}}
+table.sub{width:100%;border-collapse:collapse;font-size:.92rem}
+table.sub th{text-align:left;font-weight:600;color:var(--ink2);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:1.5px solid var(--line);padding:8px 6px}
+table.sub td{border-bottom:1px solid var(--line);padding:9px 6px;vertical-align:middle}
+.ss{display:inline-flex;gap:2px}
+.ss i{width:6px;height:14px;border-radius:2px;background:var(--line)}
+.ss i.f{background:var(--accent)}
+.tag{display:inline-block;font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px}
+.tag.s{background:var(--green2);color:var(--green)}
+.tag.w{background:var(--red2);color:var(--red)}
+.tag.nn{background:var(--paper);color:var(--ink2)}
+.sw{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.sw{grid-template-columns:1fr}}
+.swbox{border-radius:14px;padding:18px}
+.swbox.s{background:var(--green2)}
+.swbox.w{background:var(--gold2)}
+.swbox h3{font-size:1.05rem}
+.swbox .it{margin:10px 0}
+.swbox .it b{display:block}
+.idx{border-top:1px solid var(--line);padding-top:22px;margin-top:22px}
+.idx:first-of-type{border-top:0;margin-top:6px;padding-top:4px}
+.idxhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.idxhead .n{font-family:"Fraunces";font-size:2rem;font-weight:700}
+.pm{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0}
+@media(max-width:640px){.pm{grid-template-columns:1fr}}
+.pm>div{border-radius:12px;padding:12px 14px}
+.pm .p{background:var(--green2)}
+.pm .m{background:var(--red2)}
+.pm h4{margin:0 0 4px;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em}
+.pm .p h4{color:var(--green)} .pm .m h4{color:var(--red)}
+.tips{background:var(--paper);border-radius:12px;padding:12px 16px}
+.tips h4{margin:0 0 4px;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold)}
+.note{background:var(--gold2);border-radius:12px;padding:12px 16px;margin:10px 0;font-size:.93rem}
+.insight{border-left:3px solid var(--accent);padding:4px 0 4px 14px;margin:14px 0}
+.insight>b:first-child{display:block;margin-bottom:2px}
+.refs li{margin:.35em 0;font-size:.88rem;color:var(--ink2)}
+.center{text-align:center}
+.fade{animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:.9rem;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+.feedback{text-align:center;font-weight:600;min-height:1.5em;margin-top:8px}
+.modal{position:fixed;inset:0;background:rgba(29,36,51,.45);display:flex;align-items:center;justify-content:center;z-index:8;padding:18px}
+.modal .card{max-width:440px}
+</style>
+</head>
+<body>
+<div class="topbar" id="topbar" style="display:none"><div class="in"><span class="logo">NOUS</span><div class="prog"><i id="progbar" style="width:0"></i></div><span class="small muted" id="secname"></span><span class="timer" id="timer" style="display:none"></span></div></div>
+<div class="wrap" id="app"></div>
+<div class="toast" id="toast"></div>
+<script>
+"use strict";
+/* ============ utility ============ */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function shuffle(arr,rng){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor((rng?rng():Math.random())*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const $=s=>document.querySelector(s);
+const app=$('#app');
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),2200)}
+function fmtTime(s){s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+function normCdf(z){const t=1/(1+.2316419*Math.abs(z));const d=.3989423*Math.exp(-z*z/2);let p=d*t*(.3193815+t*(-.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p}
+function mean(a){return a.reduce((x,y)=>x+y,0)/a.length}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+
+/* gender-aware text: {m|f} */
+function gx(s){
+  const g=S.p&&S.p.gender;
+  return String(s).replace(/\{([^|}]*)\|([^}]*)\}/g,(m,a,b)=>g==='f'?b:g==='m'?a:(a+'/'+b));
+}
+
+/* ============ SVG shapes ============ */
+const INK='#1d2433', GREY='#9aa3b2';
+function polyPts(n,cx,cy,R,start){const p=[];for(let i=0;i<n;i++){const a=(start+i*360/n)*Math.PI/180;p.push((cx+R*Math.cos(a)).toFixed(2)+','+(cy+R*Math.sin(a)).toFixed(2))}return p.join(' ')}
+function shapeSVG(t,cx,cy,s,rot,fill,sw){
+  const f=fill==='none'?'#fff':fill==='grey'?GREY:INK;
+  const st=`stroke="${INK}" stroke-width="${sw||2.2}" stroke-linejoin="round"`;
+  let el='';
+  switch(t){
+    case 'circle': el=`<circle cx="${cx}" cy="${cy}" r="${s}" fill="${f}" ${st}/>`;break;
+    case 'square': el=`<rect x="${cx-s*.86}" y="${cy-s*.86}" width="${s*1.72}" height="${s*1.72}" fill="${f}" ${st}/>`;break;
+    case 'triangle': el=`<polygon points="${polyPts(3,cx,cy+s*.15,s*1.15,-90)}" fill="${f}" ${st}/>`;break;
+    case 'diamond': el=`<polygon points="${polyPts(4,cx,cy,s*1.15,-90)}" fill="${f}" ${st}/>`;break;
+    case 'pentagon': el=`<polygon points="${polyPts(5,cx,cy,s*1.05,-90)}" fill="${f}" ${st}/>`;break;
+    case 'cross':{const a=s*.36,b=s*1.0;const P=[[-a,-b],[a,-b],[a,-a],[b,-a],[b,a],[a,a],[a,b],[-a,b],[-a,a],[-b,a],[-b,-a],[-a,-a]].map(([x,y])=>(cx+x).toFixed(2)+','+(cy+y).toFixed(2)).join(' ');el=`<polygon points="${P}" fill="${f}" ${st}/>`;break}
+    case 'halfL': case 'halfR': case 'halfT': case 'halfB':{
+      const d={halfL:`M${cx},${cy-s} A${s},${s} 0 0 0 ${cx},${cy+s} Z`,halfR:`M${cx},${cy-s} A${s},${s} 0 0 1 ${cx},${cy+s} Z`,halfT:`M${cx-s},${cy} A${s},${s} 0 0 1 ${cx+s},${cy} Z`,halfB:`M${cx-s},${cy} A${s},${s} 0 0 0 ${cx+s},${cy} Z`}[t];
+      el=`<circle cx="${cx}" cy="${cy}" r="${s}" fill="#fff" ${st}/><path d="${d}" fill="${INK}"/>`;break}
+  }
+  if(rot)el=`<g transform="rotate(${rot} ${cx} ${cy})">${el}</g>`;
+  return el;
+}
+const LAYOUT={1:[[50,50]],2:[[29,50],[71,50]],3:[[50,29],[28,68],[72,68]],4:[[29,29],[71,29],[29,71],[71,71]]};
+const BASE_S={1:23,2:15,3:14,4:13};
+function cellSVG(c){
+  let inner='';
+  if(c.lines!==undefined){
+    const m=c.lines;
+    for(let i=0;i<8;i++)if(m>>i&1){const a=i*45*Math.PI/180;inner+=`<line x1="50" y1="50" x2="${(50+36*Math.cos(a)).toFixed(1)}" y2="${(50+36*Math.sin(a)).toFixed(1)}" stroke="${INK}" stroke-width="3.2" stroke-linecap="round"/>`}
+    const E=[[14,14,86,14],[86,14,86,86],[86,86,14,86],[14,86,14,14]];
+    for(let i=0;i<4;i++)if(m>>(8+i)&1){const e=E[i];inner+=`<line x1="${e[0]}" y1="${e[1]}" x2="${e[2]}" y2="${e[3]}" stroke="${INK}" stroke-width="3.2" stroke-linecap="round"/>`}
+    inner+=`<circle cx="50" cy="50" r="2.6" fill="${INK}"/>`;
+  }else{
+    const pos=LAYOUT[c.count], s=BASE_S[c.count]*(c.size||1);
+    for(const [x,y] of pos) inner+=shapeSVG(c.shape,x,y,s,c.shape==='triangle'?c.rot:0,c.fill);
+  }
+  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+}
+function cellKey(c){if(c.lines!==undefined)return 'L'+c.lines;return [c.shape,c.count,c.fill,c.shape==='triangle'?c.rot:0,c.size||1].join('|')}
+
+/* ============ MATRICES (Raven-like, rule-based) ============ */
+const SH=['circle','square','triangle','diamond','pentagon','cross'];
+const MATRIX_SPECS=[
+  {lvl:1,f:(r,c)=>({shape:['circle','square','triangle'][r],count:c+1,fill:'none',rot:0})},
+  {lvl:1,f:(r,c)=>({shape:['square','circle','diamond'][(r+c)%3],count:1,fill:['none','grey','black'][r],rot:0})},
+  {lvl:1,f:(r,c)=>({shape:['triangle','circle','square'][(r+c)%3],count:[1,2,3][c],fill:'black',rot:0})},
+  {lvl:1,f:(r,c)=>({shape:['pentagon','diamond','circle'][r],fill:['none','grey','black'][(r+c)%3],count:[1,2,3][(r+2*c)%3],rot:0})},
+  {lvl:2,f:(r,c)=>({shape:['circle','triangle','cross'][(r+c)%3],count:[3,2,1][(r+2*c)%3],fill:['black','grey','none'][c],rot:0})},
+  {lvl:2,f:(r,c)=>({shape:'triangle',rot:(c*90+r*45)%360,count:[1,2,3][(r+c)%3],fill:'grey'})},
+  {lvl:2,f:(r,c)=>({shape:['square','pentagon','circle'][(r+c)%3],fill:['none','black','grey'][(r+2*c)%3],count:[1,2,3][r],rot:0})},
+  {lvl:2,f:(r,c)=>({shape:['diamond','circle','triangle'][(r+2*c)%3],count:[1,2,3][(r+c)%3],fill:['grey','none','black'][(r+c)%3],size:[.62,.82,1][c],rot:0})},
+  {lvl:3,lines:'or',seed:11},
+  {lvl:3,f:(r,c)=>({shape:['cross','pentagon','diamond'][(r+c)%3],count:[1,2,3][(r+2*c)%3],fill:['none','grey','black'][(2*r+c)%3],rot:0})},
+  {lvl:3,lines:'xor',seed:23},
+  {lvl:3,lines:'and',seed:37},
+];
+function bits(m){let n=0;while(m){n+=m&1;m>>=1}return n}
+function randMask(rng,k,excl){let m=0;let guard=0;while(bits(m)<k&&guard++<200){const b=Math.floor(rng()*12);if(!((excl>>b)&1))m|=1<<b}return m}
+function buildLinesMatrix(spec){
+  const rng=mulberry32(spec.seed);const rows=[];
+  for(let r=0;r<3;r++){
+    let a,b,o;
+    for(let g=0;g<200;g++){
+      if(spec.lines==='and'){const c=randMask(rng,2+Math.floor(rng()*2),0);const ra=randMask(rng,2,c);const rb=randMask(rng,2,c|ra);a=c|ra;b=c|rb;o=a&b}
+      else{a=randMask(rng,3+Math.floor(rng()*2),0);b=randMask(rng,3+Math.floor(rng()*2),0);o=spec.lines==='or'?(a|b):(a^b)}
+      if(bits(o)>=2&&a!==b&&o!==a&&o!==b&&(spec.lines!=='or'||(a&b)!==a&&(a&b)!==b))break;
+    }
+    rows.push([a,b,o]);
+  }
+  const cells=rows.flat().map(m=>({lines:m}));
+  const ans=cells[8];const A=rows[2][0],B=rows[2][1];
+  const cand=[A,B,A|B,A&B,A^B];
+  for(let i=0;i<12;i++)cand.push(ans.lines^(1<<i));
+  const seen=new Set([ans.lines]);const pri=[];const rest=[];
+  cand.forEach((m,i)=>{if(m===0||seen.has(m))return;seen.add(m);(i<5?pri:rest).push(m)});
+  const d=pri.concat(shuffle(rest,rng)).slice(0,7).map(m=>({lines:m}));
+  return {cells,ans,dis:d,rng};
+}
+function buildAttrMatrix(spec,seed){
+  const rng=mulberry32(seed);const cells=[];
+  for(let r=0;r<3;r++)for(let c=0;c<3;c++)cells.push(spec.f(r,c));
+  const ans=cells[8];
+  const keys=['shape','count','fill','rot','size'];
+  const val=(c,k)=>k==='size'?(c.size||1):c[k];
+  const vary=keys.filter(k=>new Set(cells.map(c=>val(c,k))).size>1&&(k!=='rot'||ans.shape==='triangle'));
+  const dom={shape:SH,count:[1,2,3,4],fill:['none','grey','black'],rot:[0,90,180,270,45,135],size:[.62,.82,1]};
+  const seen=new Set([cellKey(ans)]);const c1=[],c2=[],c3=[];
+  const push=(arr,c)=>{const k=cellKey(c);if(!seen.has(k)){seen.add(k);arr.push(c)}};
+  for(const k of vary){for(const v of new Set(cells.map(c=>val(c,k))))if(v!==val(ans,k))push(c1,{...ans,[k]:v})}
+  for(let i=0;i<vary.length;i++)for(let j=i+1;j<vary.length;j++){const ki=vary[i],kj=vary[j];
+    for(const vi of new Set(cells.map(c=>val(c,ki))))for(const vj of new Set(cells.map(c=>val(c,kj))))if(vi!==val(ans,ki)&&vj!==val(ans,kj))push(c3,{...ans,[ki]:vi,[kj]:vj})}
+  for(const k of keys){if(k==='rot'&&ans.shape!=='triangle')continue;for(const v of dom[k])if(v!==val(ans,k))push(c2,{...ans,[k]:v})}
+  let d=shuffle(c1,rng).slice(0,5);
+  d=d.concat(shuffle(c3,rng)).slice(0,6);
+  d=d.concat(shuffle(c2,rng)).slice(0,7);
+  return {cells,ans,dis:d,rng};
+}
+function buildMatrices(){
+  return MATRIX_SPECS.map((sp,i)=>{
+    const m=sp.lines?buildLinesMatrix(sp):buildAttrMatrix(sp,100+i*7);
+    const opts=shuffle([m.ans,...m.dis],mulberry32(500+i));
+    return {cells:m.cells.slice(0,8),opts,a:opts.indexOf(m.ans),lvl:sp.lvl,kind:sp.lines||'attr'};
+  });
+}
+
+/* ============ MENTAL ROTATION (Shepard–Metzler, 2D) ============ */
+const nrm=cs=>{const mx=Math.min(...cs.map(c=>c[0])),my=Math.min(...cs.map(c=>c[1]));return cs.map(([x,y])=>[x-mx,y-my]).sort((a,b)=>a[0]-b[0]||a[1]-b[1])};
+const pkey=cs=>JSON.stringify(nrm(cs));
+const r90=cs=>cs.map(([x,y])=>[y,-x]);
+const rotK=(cs,k)=>{let r=cs;for(let i=0;i<((k%4)+4)%4;i++)r=r90(r);return nrm(r)};
+const mir=cs=>nrm(cs.map(([x,y])=>[-x,y]));
+const allT=cs=>{const s=new Set();for(let k=0;k<4;k++){s.add(pkey(rotK(cs,k)));s.add(pkey(rotK(mir(cs),k)))}return s};
+function connected(cs){const set=new Set(cs.map(c=>c+''));const st=[cs[0]];const vis=new Set([cs[0]+'']);while(st.length){const [x,y]=st.pop();for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const k=[x+dx,y+dy]+'';if(set.has(k)&&!vis.has(k)){vis.add(k);st.push([x+dx,y+dy])}}}return vis.size===cs.length}
+const ROT_SPECS=[
+  {s:[[0,0],[0,1],[0,2],[0,3],[1,3]],tk:0,k:1,alt:false},
+  {s:[[0,0],[1,0],[0,1],[1,1],[0,2]],tk:0,k:2,alt:false},
+  {s:[[1,0],[2,0],[0,1],[1,1],[1,2]],tk:1,k:1,alt:false},
+  {s:[[0,0],[0,1],[1,1],[1,2],[1,3]],tk:0,k:3,alt:false},
+  {s:[[1,0],[0,1],[1,1],[1,2],[1,3]],tk:2,k:1,alt:true},
+  {s:[[0,1],[1,1],[2,1],[2,2],[3,2],[1,0]],tk:1,k:2,alt:true},
+  {s:[[0,0],[1,0],[2,0],[3,0],[3,1],[1,1],[1,2]],tk:3,k:1,alt:true},
+  {s:[[0,0],[0,1],[1,1],[2,1],[2,2],[3,1]],tk:0,k:3,alt:true},
+  {s:[[0,0],[1,0],[1,1],[1,2],[2,2],[3,2],[3,1],[1,3]],tk:2,k:3,alt:true},
+  {s:[[0,1],[1,1],[1,0],[2,0],[2,1],[2,2],[3,2]],tk:1,k:2,alt:true},
+];
+function buildRotations(){
+  return ROT_SPECS.map((sp,i)=>{
+    const rng=mulberry32(900+i*13);
+    const base=nrm(sp.s);
+    const target=rotK(base,sp.tk);
+    const correct=rotK(base,sp.tk+sp.k);
+    const mj=shuffle([0,1,2,3],rng);
+    const dis=[];const seen=new Set([pkey(correct)]);
+    for(const j of mj){const m=rotK(mir(base),j);const k=pkey(m);if(!seen.has(k)){seen.add(k);dis.push(m)}if(dis.length>=(sp.alt?2:3))break}
+    if(sp.alt){
+      const forb=allT(base);let found=null;
+      const order=shuffle(base.map((_,ix)=>ix),rng);
+      outer:for(const ix of order){const rest=base.filter((_,j)=>j!==ix);
+        const nb=[];rest.forEach(([x,y])=>[[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy])=>nb.push([x+dx,y+dy])));
+        for(const p of shuffle(nb,rng)){if(rest.some(c=>c[0]===p[0]&&c[1]===p[1]))continue;if(p[0]===base[ix][0]&&p[1]===base[ix][1])continue;const cand=nrm([...rest,p]);if(!connected(cand))continue;if(forb.has(pkey(cand)))continue;found=cand;break outer}}
+      if(found)dis.push(rotK(found,Math.floor(rng()*4)));
+    }
+    const opts=shuffle([correct,...dis],rng);
+    return {target,opts,a:opts.indexOf(correct),n:base.length};
+  });
+}
+function polySVG(cs,hue){
+  const W=Math.max(...cs.map(c=>c[0]))+1,H=Math.max(...cs.map(c=>c[1]))+1;
+  const u=Math.min(96/Math.max(W,H),22);const ox=(120-W*u)/2,oy=(120-H*u)/2;
+  let s='';for(const [x,y] of cs){s+=`<rect x="${(ox+x*u).toFixed(1)}" y="${(oy+y*u).toFixed(1)}" width="${u.toFixed(1)}" height="${u.toFixed(1)}" fill="${hue||'#2f6f6a'}" stroke="#fff" stroke-width="1.6" rx="2"/>`}
+  return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
+}
+
+/* ============ VERBAL ============ */
+const ANALOG=[
+  {q:'pták : hnízdo = včela : ?',o:['úl','med','květ','žihadlo'],a:'úl'},
+  {q:'ryba : ploutev = pták : ?',o:['křídlo','zobák','peří','let'],a:'křídlo'},
+  {q:'housenka : motýl = pulec : ?',o:['žába','rybník','ryba','jikra'],a:'žába'},
+  {q:'hladový : jíst = unavený : ?',o:['spát','zívat','sedět','pít'],a:'spát'},
+  {q:'teplota : teploměr = tlak : ?',o:['barometr','voltmetr','kompas','váha'],a:'barometr'},
+  {q:'spisovatel : román = skladatel : ?',o:['symfonie','klavír','nota','dirigent'],a:'symfonie'},
+  {q:'kruh : koule = čtverec : ?',o:['krychle','hranol','obdélník','válec'],a:'krychle'},
+  {q:'kapka : oceán = zrnko : ?',o:['poušť','písek','kámen','prach'],a:'poušť'},
+  {q:'lékař : diagnóza = soudce : ?',o:['rozsudek','zákon','soud','obžalovaný'],a:'rozsudek'},
+  {q:'mlha : vidění = hluk : ?',o:['slyšení','ucho','zvuk','ticho'],a:'slyšení'},
+  {q:'sever : jih = zenit : ?',o:['nadir','horizont','obloha','poledne'],a:'nadir'},
+  {q:'prolog : epilog = předehra : ?',o:['dohra','opera','scéna','potlesk'],a:'dohra'},
+];
+const VOCAB=[
+  {q:'neúnavný',o:['vytrvalý','unavený','neurčitý','rychlý'],a:'vytrvalý'},
+  {q:'pragmatický',o:['praktický','teoretický','pravidelný','nepřesný'],a:'praktický'},
+  {q:'zevrubný',o:['podrobný','povrchní','vnější','hrubý'],a:'podrobný'},
+  {q:'obstrukce',o:['překážka','stavba','pozorování','ústupek'],a:'překážka'},
+  {q:'lakonický',o:['strohý','mnohomluvný','líný','lačný'],a:'strohý'},
+  {q:'efemérní',o:['pomíjivý','věčný','éterický','efektní'],a:'pomíjivý'},
+  {q:'eklatantní',o:['zjevný','skrytý','elegantní','nadšený'],a:'zjevný'},
+  {q:'ambivalentní',o:['rozporuplný','dvojjazyčný','ctižádostivý','vlídný'],a:'rozporuplný'},
+  {q:'perfidní',o:['záludný','dokonalý','vytříbený','prostý'],a:'záludný'},
+  {q:'konfabulace',o:['smyšlené vzpomínky','spiknutí','slavnostní shromáždění','záměna hlásek'],a:'smyšlené vzpomínky'},
+  {q:'apodiktický',o:['nevyvratitelný','pochybný','lhostejný','odborný'],a:'nevyvratitelný'},
+  {q:'sinekura',o:['výnosné místo bez práce','chronická nemoc','svatyně','hudební skladba'],a:'výnosné místo bez práce'},
+];
+/* ============ SERIES ============ */
+const SERIES=[
+  {q:[3,6,9,12],a:15,t:'aritmetická'},
+  {q:[2,4,8,16],a:32,t:'geometrická'},
+  {q:[1,4,9,16,25],a:36,t:'mocniny'},
+  {q:[5,7,11,17,25],a:35,t:'rostoucí rozdíly'},
+  {q:[1,1,2,3,5,8],a:13,t:'Fibonacci'},
+  {q:[1,8,27,64],a:125,t:'mocniny'},
+  {q:[2,6,3,9,6,18],a:15,t:'střídání operací'},
+  {q:[10,13,9,14,8,15],a:7,t:'střídání operací'},
+  {q:[2,3,5,7,11,13],a:17,t:'prvočísla'},
+  {q:[4,9,19,39,79],a:159,t:'kombinovaná operace'},
+  {q:[1,2,6,24,120],a:720,t:'faktoriál'},
+  {q:[7,10,16,28,52],a:100,t:'geometrické rozdíly'},
+];
+/* ============ LOGIC ============ */
+const LOGIC=[
+  {p:['Všechna A jsou B.','Všechna B jsou C.'],c:'Všechna A jsou C.',a:'Ano',tag:'tranzitivita'},
+  {p:['Žádný kov není živý.','Měď je kov.'],c:'Měď není živá.',a:'Ano',tag:'sylogismus'},
+  {p:['Pokud prší, je silnice mokrá.','Silnice není mokrá.'],c:'Neprší.',a:'Ano',tag:'modus tollens'},
+  {p:['Jan je vyšší než Petr.','Petr je vyšší než Karel.','Karel je vyšší než Tomáš.'],c:'Jan je vyšší než Tomáš.',a:'Ano',tag:'tranzitivita'},
+  {p:['Všechny růže jsou květiny.','Některé květiny rychle vadnou.'],c:'Některé růže rychle vadnou.',a:'Ne',tag:'nedovolené zobecnění'},
+  {p:['Pokud prší, je silnice mokrá.','Silnice je mokrá.'],c:'Pršelo.',a:'Ne',tag:'potvrzení důsledku'},
+  {p:['Všechny kovové předměty se ve vodě potopí.','Lodě jsou kovové předměty.'],c:'Lodě se ve vodě potopí.',a:'Ano',tag:'belief bias'},
+  {p:['Někteří lékaři jsou kuřáci.','Žádný kuřák není vrcholový sportovec.'],c:'Někteří lékaři nejsou vrcholovými sportovci.',a:'Ano',tag:'sylogismus'},
+  {p:['Žádný pták není savec.','Někteří savci létají.'],c:'Někteří létající tvorové nejsou ptáci.',a:'Ano',tag:'sylogismus'},
+  {p:['Všichni chemici jsou vědci.','Někteří vědci jsou zvědaví.','Žádný zvědavý člověk není líný.'],c:'Někteří chemici nejsou líní.',a:'Ne',tag:'nedovolené zobecnění'},
+];
+
+/* ============ SYMBOLS (speed tasks) ============ */
+const GLYPHS=[
+  ['circle','none'],['circle','black'],['square','none'],['square','black'],['triangle','none'],['triangle','black'],
+  ['diamond','none'],['diamond','black'],['pentagon','none'],['pentagon','black'],['cross','none'],['cross','black'],
+  ['halfL'],['halfR'],['halfT'],['halfB']
+];
+function glyphSVG(i){const g=GLYPHS[i];return `<svg class="sym" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">${shapeSVG(g[0],20,20,12,0,g[1]||'none',2)}</svg>`}
+
+/* ============ SECTIONS ============ */
+const SECTIONS=[
+  {id:'analog',name:'Verbální analogie',type:'mc',limit:360,
+   intro:'Doplň analogii: najdi slovo, které je k třetímu pojmu ve <b>stejném vztahu</b>, v jakém je druhý pojem k prvnímu.',
+   ex:'<b>Příklad:</b> ruka : rukavice = noha : ? → <b>ponožka</b> (to, co se na ni obléká).'},
+  {id:'matrix',name:'Maticové úlohy',type:'matrix',limit:660,
+   intro:'Každá matice 3 × 3 je sestavena podle jednoho nebo více pravidel, která platí v <b>řádcích i sloupcích</b> (tvar, počet, výplň, orientace, velikost… nebo skládání čar). Vyber z 8 možností obrazec, který patří na místo otazníku.',
+   ex:'<b>Tip:</b> Sleduj každou vlastnost zvlášť. U úloh s čarami zkus, zda třetí políčko nevzniká „sečtením“ nebo „odečtením“ prvních dvou.'},
+  {id:'digit',name:'Opakování čísel',type:'digit',
+   intro:'Na obrazovce se po jedné objeví číslice. Zapamatuj si je a poté je zapiš. V první části <b>ve stejném pořadí</b>, ve druhé části <b>pozpátku</b>. Řady se postupně prodlužují; test končí, když se ti nepovedou oba pokusy stejné délky.',
+   ex:'<b>Příklad pozpátku:</b> uvidíš 5 – 8 – 2 → zapíšeš <b>285</b>. Nic si nezapisuj na papír, jde o paměť.'},
+  {id:'series',name:'Číselné řady',type:'num',limit:420,
+   intro:'Najdi pravidlo, podle kterého řada pokračuje, a napiš <b>následující číslo</b>.',
+   ex:'<b>Příklad:</b> 1, 3, 5, 7, ? → <b>9</b> (vždy +2).'},
+  {id:'rotate',name:'Mentální rotace',type:'rotate',limit:300,
+   intro:'Vlevo je vzorový tvar. Vyber ze čtyř možností ten, který je <b>stejný tvar, jen otočený</b> v rovině. Ostatní jsou zrcadlově převrácené nebo jinak pozměněné – ty nelze dostat pouhým otočením.',
+   ex:'<b>Tip:</b> Najdi na tvaru výrazný „roh“ nebo výběžek a v duchu ho otáčej. Tvar se nesmí překlopit jako v zrcadle.'},
+  {id:'ssearch',name:'Hledání symbolů',type:'ssearch',limit:90,
+   intro:'Vlevo nahoře jsou dva <b>cílové symboly</b>. Rozhodni co nejrychleji, zda se <b>některý z nich</b> nachází ve skupině pěti symbolů pod nimi. Na úlohu máš 90 sekund, počítá se rychlost i přesnost (chyby se odečítají).',
+   ex:'<b>Ovládání:</b> tlačítka ANO / NE, na klávesnici <b>←</b> = ANO, <b>→</b> = NE (nebo A / N). Nejdřív si to vyzkoušíš na 4 cvičných úlohách.'},
+  {id:'coding',name:'Kódování symbolů',type:'coding',limit:90,
+   intro:'Nahoře je <b>klíč</b>: každý symbol má přiřazenou číslici 1–9. Uprostřed se objeví symbol – co nejrychleji stiskni jeho číslici. Na úlohu máš 90 sekund.',
+   ex:'<b>Ovládání:</b> klávesy 1–9 nebo tlačítka. Nejdřív 4 cvičné úlohy. Klíč se během testu nemění – je výhodné si ho postupně zapamatovat.'},
+  {id:'vocab',name:'Slovník',type:'mc',limit:300,
+   intro:'Vyber slovo nebo výraz, který má <b>nejbližší význam</b> zadanému slovu.',
+   ex:'<b>Příklad:</b> <i>veselý</i> → radostný / smutný / hlasitý / rychlý → <b>radostný</b>.'},
+  {id:'logic',name:'Logické úsudky',type:'mc',limit:360,
+   intro:'Přečti předpoklady a rozhodni, zda z nich závěr <b>nutně logicky plyne</b>. Předpoklady ber jako pravdivé, i když odporují skutečnosti – posuzuješ jen <b>logickou platnost</b>, ne to, zda je závěr pravdivý ve skutečném světě.',
+   ex:'<b>Příklad:</b> Všichni psi umí létat. Rex je pes. → „Rex umí létat.“ <b>Ano, plyne</b> (i když ve skutečnosti psi nelétají).'},
+];
+const SUBTESTS={
+  analog:{name:'Verbální analogie',idx:'VCI',max:12},
+  vocab:{name:'Slovník',idx:'VCI',max:12},
+  matrix:{name:'Maticové úlohy',idx:'PRI',max:12},
+  rotate:{name:'Mentální rotace',idx:'PRI',max:10},
+  series:{name:'Číselné řady',idx:'QRI',max:12},
+  logic:{name:'Logické úsudky',idx:'QRI',max:10},
+  dfwd:{name:'Opakování čísel – vpřed',idx:'WMI',max:14},
+  dbwd:{name:'Opakování čísel – pozpátku',idx:'WMI',max:14},
+  ssearch:{name:'Hledání symbolů',idx:'PSI',max:null},
+  coding:{name:'Kódování symbolů',idx:'PSI',max:null},
+};
+/* orientační normy pro dospělé 20–34 let (průměr, SD hrubého skóru) */
+const NORMS={analog:[8.3,2.1],vocab:[6.6,2.6],matrix:[6.6,2.6],rotate:[6.5,2.1],series:[7.0,2.6],logic:[6.9,1.7],dfwd:[9.0,2.2],dbwd:[7.6,2.4],ssearch:[30,8],coding:[38,9]};
+const DOMAIN={analog:'gc',vocab:'gc',matrix:'gf',rotate:'gf',series:'gf',logic:'gf',dfwd:'wm',dbwd:'wm',ssearch:'gs',coding:'gs'};
+/* věkové posuny očekávaného průměru v jednotkách SD (Salthouse 2009; Horn & Cattell; normativní trendy WAIS-IV) */
+function ageOffset(dom,age){
+  const T={
+    gf:[[15,-.45],[19,-.1],[34,0],[44,-.2],[54,-.45],[64,-.75],[200,-1.05]],
+    gc:[[15,-.8],[19,-.3],[34,0],[44,.15],[64,.25],[200,.1]],
+    wm:[[15,-.35],[19,-.05],[44,0],[54,-.15],[64,-.3],[200,-.55]],
+    gs:[[15,-.3],[19,0],[34,0],[44,-.3],[54,-.6],[64,-.95],[200,-1.35]],
+  }[dom];
+  for(const [lim,o] of T)if(age<=lim)return o;return 0;
+}
+const INDEXES={
+  VCI:{name:'Verbální porozumění',chc:'Gc · krystalická inteligence',color:'#7a5c2e'},
+  PRI:{name:'Fluidní a prostorové uvažování',chc:'Gf + Gv · fluidní inteligence, vizualizace',color:'#2f6f6a'},
+  QRI:{name:'Kvantitativní a logické uvažování',chc:'Gq + RG · číselné a deduktivní uvažování',color:'#3b5a8a'},
+  WMI:{name:'Pracovní paměť',chc:'Gwm · pracovní paměť',color:'#8a3f5c'},
+  PSI:{name:'Rychlost zpracování',chc:'Gs · rychlost zpracování',color:'#b8862b'},
+};
+
+/* ============ STATE ============ */
+let S={p:null,step:0,raw:{},used:{},detail:{},startedAt:null};
+let MATS=null,ROTS=null,ANALOG_O=null,VOCAB_O=null;
+let cur=null, tick=null, keyH=null;
+
+function prepItems(){
+  MATS=buildMatrices();ROTS=buildRotations();
+  const r1=mulberry32(77),r2=mulberry32(78);
+  ANALOG_O=ANALOG.map(x=>({...x,o:shuffle(x.o,r1)}));
+  VOCAB_O=VOCAB.map(x=>({...x,o:shuffle(x.o,r2)}));
+}
+function setTop(show,name,frac){
+  $('#topbar').style.display=show?'block':'none';
+  if(name!==undefined)$('#secname').textContent=name;
+  if(frac!==undefined)$('#progbar').style.width=(frac*100).toFixed(1)+'%';
+}
+function setTimer(sec){const t=$('#timer');if(sec===null){t.style.display='none';return}t.style.display='inline-block';t.textContent=fmtTime(sec);t.classList.toggle('warn',sec<=30)}
+function stopTimer(){if(tick){clearInterval(tick);tick=null}}
+function setKeys(fn){if(keyH)document.removeEventListener('keydown',keyH);keyH=fn;if(fn)document.addEventListener('keydown',fn)}
+window.addEventListener('beforeunload',e=>{if(S.step>0&&S.step<=SECTIONS.length){e.preventDefault();e.returnValue=''}});
+
+/* ============ SCREENS ============ */
+function screenWelcome(){
+  setTop(false);
+  app.innerHTML=`<div class="fade">
+  <div class="card">
+    <div class="eyebrow">Kognitivní profil · 10 subtestů · cca 35 minut</div>
+    <h1>NOUS<br><span style="font-weight:400;font-size:.55em">test inteligence založený na skutečných testech</span></h1>
+    <p class="muted">Test je postaven na struktuře současných inteligenčních testů – <b>WAIS-IV</b> (Wechslerova škála inteligence pro dospělé), <b>Ravenových progresivních matic</b> a modelu inteligence <b>Cattell–Horn–Carroll (CHC)</b>. Neměří jen jedno číslo, ale pět oblastí myšlení, a ukáže ti, v čem jsi silný/á a kde máš rezervy.</p>
+    <div class="grid2" style="margin-top:18px">
+      ${Object.values(INDEXES).map(x=>`<div style="display:flex;gap:10px;align-items:flex-start"><span style="width:10px;height:10px;border-radius:50%;background:${x.color};margin-top:7px;flex:none"></span><div><b>${x.name}</b><div class="small muted">${x.chc}</div></div></div>`).join('')}
+    </div>
+  </div>
+  <div class="card">
+    <h3>Než začneš</h3>
+    <ul class="clean">
+      <li>Najdi si <b>klidné místo</b> a cca 35–45 minut bez vyrušení. Telefon do režimu Nerušit.</li>
+      <li>Většina oddílů má <b>časový limit</b> – jako ve skutečném testu. Pracuj rychle, ale přesně.</li>
+      <li>Nepoužívej kalkulačku, papír ani vyhledávání – výsledek by ztratil smysl.</li>
+      <li>Nejlépe na <b>počítači</b> (u rychlostních úloh je telefon pomalejší; ve vyhodnocení se to zohlední).</li>
+      <li>Rozpracovaný test nelze uložit – po zavření stránky začneš znovu.</li>
+    </ul>
+    <p class="small muted">Výsledek je orientační odhad, nikoli klinická diagnostika. Podrobnosti o metodice najdeš na konci vyhodnocení.</p>
+    <div class="row" style="margin-top:14px"><button class="btn" onclick="screenIntake()">Pokračovat k dotazníku →</button></div>
+  </div></div>`;
+  window.scrollTo(0,0);
+}
+const EDU=['Základní','Střední bez maturity (výuční list)','Střední s maturitou','Vyšší odborné / bakalářské','Magisterské / inženýrské','Doktorské (Ph.D.)'];
+const intake={gender:'',native:'ano',fatigue:'2',exp:'nikdy',device:'počítač',env:'klidné'};
+function chipGroup(key,vals){return `<div class="chips" data-k="${key}">${vals.map(v=>`<span class="chip${intake[key]===v[0]?' on':''}" onclick="pickChip('${key}','${v[0]}',this)">${v[1]}</span>`).join('')}</div>`}
+function pickChip(k,v,el){intake[k]=v;el.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));el.classList.add('on')}
+function screenIntake(){
+  app.innerHTML=`<div class="card fade">
+    <div class="eyebrow">Krok 1 · Úvodní dotazník</div>
+    <h2>Pár údajů o tobě</h2>
+    <p class="muted small">Věk je nutný pro přepočet na věkové normy (výkon v různých oblastech se s věkem mění různě). Ostatní údaje zpřesní interpretaci. Nic se nikam neodesílá.</p>
+    <form id="f" onsubmit="return submitIntake(event)">
+    <div class="grid2">
+      <div><label class="f">Jméno <span class="req">*</span></label><input type="text" id="name" maxlength="40" autocomplete="given-name"></div>
+      <div><label class="f">Věk <span class="req">*</span></label><input type="number" id="age" min="12" max="99" inputmode="numeric"></div>
+    </div>
+    <div style="margin-top:16px"><label class="f">Pohlaví <span class="muted small">(jen pro správné tvary oslovení)</span></label>${chipGroup('gender',[['m','Muž'],['f','Žena'],['x','Neuvádím']])}</div>
+    <div class="grid2" style="margin-top:16px">
+      <div><label class="f">Nejvyšší dosažené vzdělání</label><select id="edu"><option value="">— vyber —</option>${EDU.map((e,i)=>`<option value="${i}">${e}</option>`).join('')}</select></div>
+      <div><label class="f">Obor / povolání</label><input type="text" id="field" maxlength="60" placeholder="např. strojní inženýr"></div>
+    </div>
+    <div style="margin-top:16px"><label class="f">Je čeština tvůj mateřský jazyk?</label>${chipGroup('native',[['ano','Ano'],['ne','Ne']])}</div>
+    <div style="margin-top:16px"><label class="f">Jak se teď cítíš?</label>${chipGroup('fatigue',[['1','Svěže'],['2','Normálně'],['3','Trochu unaveně'],['4','Hodně unaveně']])}</div>
+    <div style="margin-top:16px"><label class="f">Dělal{|a} jsi už někdy IQ test?</label>${chipGroup('exp',[['nikdy','Nikdy'],['občas','1–3krát'],['často','Častěji']])}</div>
+    <div class="grid2" style="margin-top:16px">
+      <div><label class="f">Zařízení</label>${chipGroup('device',[['počítač','Počítač'],['tablet','Tablet'],['telefon','Telefon']])}</div>
+      <div><label class="f">Prostředí</label>${chipGroup('env',[['klidné','Klidné'],['rušné','Rušné']])}</div>
+    </div>
+    <div class="err" id="err" style="margin-top:12px"></div>
+    <div class="row between" style="margin-top:8px"><button type="button" class="btn ghost" onclick="screenWelcome()">← Zpět</button><button class="btn">Začít test →</button></div>
+    </form></div>`;
+  app.innerHTML=app.innerHTML.replace('Dělal{|a}','Dělal/a');
+  setTimeout(()=>$('#name').focus(),50);
+}
+function submitIntake(e){
+  e.preventDefault();
+  const name=$('#name').value.trim(),age=parseInt($('#age').value,10);
+  if(!name){$('#err').textContent='Vyplň prosím jméno.';return false}
+  if(!(age>=12&&age<=99)){$('#err').textContent='Zadej věk mezi 12 a 99 lety.';return false}
+  S={p:{name,age,gender:intake.gender,edu:$('#edu').value,field:$('#field').value.trim(),native:intake.native,fatigue:+intake.fatigue,exp:intake.exp,device:intake.device,env:intake.env},step:1,raw:{},used:{},detail:{},startedAt:Date.now()};
+  prepItems();
+  sectionIntro(0);
+  return false;
+}
+function sectionIntro(i){
+  stopTimer();setKeys(null);setTimer(null);
+  const sec=SECTIONS[i];
+  setTop(true,`${i+1}/${SECTIONS.length} · ${sec.name}`,i/SECTIONS.length);
+  const lim=sec.limit?(sec.type==='ssearch'||sec.type==='coding'?'90 sekund':'limit '+Math.round(sec.limit/60)+' min'):'bez časového limitu';
+  const count={mc:sec.id==='analog'?ANALOG.length:sec.id==='vocab'?VOCAB.length:LOGIC.length,matrix:MATS.length,num:SERIES.length,rotate:ROTS.length}[sec.type];
+  app.innerHTML=`<div class="card fade">
+    <div class="eyebrow">Oddíl ${i+1} z ${SECTIONS.length}${count?' · '+count+' úloh':''} · ${lim}</div>
+    <h2>${sec.name}</h2>
+    <p>${sec.intro}</p>
+    <div class="example">${sec.ex}</div>
+    ${i===0?`<p class="small muted">${esc(S.p.name)}, úlohy jsou seřazeny od nejlehčích po nejtěžší. Na konci je normální nevědět – test je navržen tak, aby i velmi schopní lidé narazili na strop.</p>`:''}
+    <div class="row" style="margin-top:14px"><button class="btn accent" onclick="startSection(${i})">Začít oddíl</button></div>
+  </div>`;
+  window.scrollTo(0,0);
+}
+function startSection(i){
+  const sec=SECTIONS[i];
+  if(sec.type==='digit')return digitStart(i);
+  if(sec.type==='ssearch')return ssPractice(i);
+  if(sec.type==='coding')return codPractice(i);
+  const items=sec.type==='matrix'?MATS:sec.type==='rotate'?ROTS:sec.type==='num'?SERIES:sec.id==='analog'?ANALOG_O:sec.id==='vocab'?VOCAB_O:LOGIC;
+  cur={i,sec,items,idx:0,ans:new Array(items.length).fill(null),t0:Date.now(),end:Date.now()+sec.limit*1000};
+  setTimer(sec.limit);
+  tick=setInterval(()=>{const left=(cur.end-Date.now())/1000;setTimer(left);if(left<=0){finishItems(true)}},250);
+  renderItem();
+}
+function renderItem(){
+  const {sec,items,idx}=cur;const it=items[idx];let body='';
+  const sel=cur.ans[idx];
+  if(sec.type==='mc'){
+    if(sec.id==='logic'){
+      body=`<div class="small muted" style="margin-bottom:8px">Předpoklady:</div>${it.p.map(x=>`<div class="premise">${esc(x)}</div>`).join('')}
+      <div class="concl">Závěr: „${esc(it.c)}“</div><div class="small muted" style="margin-bottom:10px">Plyne závěr nutně z předpokladů?</div>
+      <div class="opts">${['Ano','Ne'].map(o=>`<button class="opt${sel===o?' on':''}" onclick="choose('${o}')">${o==='Ano'?'Ano, nutně plyne':'Ne, nutně neplyne'}</button>`).join('')}</div>`;
+    }else{
+      const q=sec.id==='vocab'?`Které slovo má nejbližší význam slovu <b>„${esc(it.q)}“</b>?`:`<span style="font-family:'Fraunces';font-size:1.5rem">${esc(it.q)}</span>`;
+      body=`<div class="q">${q}</div><div class="opts">${it.o.map(o=>`<button class="opt${sel===o?' on':''}" onclick="choose(${JSON.stringify(o).replace(/"/g,'&quot;')})">${esc(o)}</button>`).join('')}</div>`;
+    }
+  }else if(sec.type==='matrix'){
+    body=`<div class="matrix">${it.cells.map(c=>`<div>${cellSVG(c)}</div>`).join('')}<div><span class="qm">?</span></div></div>
+    <div class="opts img">${it.opts.map((o,k)=>`<button class="opt${sel===k?' on':''}" onclick="choose(${k})">${cellSVG(o)}<small>${k+1}</small></button>`).join('')}</div>`;
+  }else if(sec.type==='rotate'){
+    body=`<div class="row" style="justify-content:center;gap:18px;align-items:center;margin-bottom:16px"><div style="width:150px;border:2px solid var(--ink);border-radius:12px;background:#fff;padding:6px">${polySVG(it.target,'#1d2433')}</div></div>
+    <div class="small muted center" style="margin-bottom:8px">Který z tvarů je vzor – pouze otočený?</div>
+    <div class="opts img">${it.opts.map((o,k)=>`<button class="opt${sel===k?' on':''}" onclick="choose(${k})">${polySVG(o)}<small>${String.fromCharCode(65+k)}</small></button>`).join('')}</div>`;
+  }else if(sec.type==='num'){
+    body=`<div class="series">${it.q.join(', ')}, <span style="color:var(--accent)">?</span></div>
+    <div style="max-width:220px;margin:0 auto"><input type="text" inputmode="numeric" class="numinput" id="numin" value="${sel===null?'':sel}" oninput="numIn(this)" onkeydown="if(event.key==='Enter'){nextItem()}" autocomplete="off"></div>`;
+  }
+  const last=idx===items.length-1;
+  app.innerHTML=`<div class="card fade" id="itemcard">
+    <div class="row between"><div class="eyebrow" style="margin:0">Úloha ${idx+1} / ${items.length}</div></div>
+    <div style="margin-top:12px">${body}</div>
+    <div class="row between" style="margin-top:20px">
+      <button class="btn ghost" onclick="prevItem()" ${idx===0?'disabled':''}>← Zpět</button>
+      ${last?`<button class="btn accent" onclick="confirmFinish()">Dokončit oddíl ✓</button>`:`<button class="btn" onclick="nextItem()">${sel===null||sel===''?'Přeskočit':'Další'} →</button>`}
+    </div>
+    <div class="dots">${items.map((_,k)=>`<button class="dot${cur.ans[k]!==null&&cur.ans[k]!==''?' done':''}${k===idx?' cur':''}" onclick="goItem(${k})">${k+1}</button>`).join('')}</div>
+  </div>`;
+  if(sec.type==='num')setTimeout(()=>{const e=$('#numin');if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length)}},30);
+  setKeys(e=>{
+    if(e.target.tagName==='INPUT')return;
+    if(sec.type==='matrix'&&/^[1-8]$/.test(e.key))choose(+e.key-1);
+    if(sec.type==='rotate'&&/^[a-dA-D]$/.test(e.key))choose(e.key.toUpperCase().charCodeAt(0)-65);
+    if(e.key==='ArrowRight'&&!last)nextItem();
+    if(e.key==='ArrowLeft'&&idx>0)prevItem();
+  });
+}
+function choose(v){cur.ans[cur.idx]=v;if(cur.idx<cur.items.length-1){renderItem();setTimeout(()=>nextItem(),220)}else renderItem()}
+function numIn(el){el.value=el.value.replace(/[^\d-]/g,'');cur.ans[cur.idx]=el.value===''?null:el.value;
+  const b=document.querySelectorAll('#itemcard .btn')[1];if(b&&b.textContent.includes('→'))b.textContent=(el.value?'Další':'Přeskočit')+' →';
+  document.querySelectorAll('.dot')[cur.idx].classList.toggle('done',!!el.value)}
+function nextItem(){if(cur.idx<cur.items.length-1){cur.idx++;renderItem()}else confirmFinish()}
+function prevItem(){if(cur.idx>0){cur.idx--;renderItem()}}
+function goItem(k){cur.idx=k;renderItem()}
+function confirmFinish(){
+  const empty=cur.ans.filter(a=>a===null||a==='').length;
+  if(empty===0)return finishItems(false);
+  const m=document.createElement('div');m.className='modal';
+  m.innerHTML=`<div class="card"><h3>Dokončit oddíl?</h3><p>Neodpověděl{|a} jsi na ${empty} ${empty===1?'úlohu':empty<5?'úlohy':'úloh'}. Pokud nevíš, tip je lepší než nic – špatná odpověď se nepenalizuje.</p><div class="row between"><button class="btn ghost" id="mback">Vrátit se</button><button class="btn accent" id="mok">Dokončit</button></div></div>`.replace('Neodpověděl{|a}',gx('Neodpověděl{|a}'));
+  document.body.appendChild(m);
+  $('#mback').onclick=()=>m.remove();$('#mok').onclick=()=>{m.remove();finishItems(false)};
+}
+function finishItems(timeout){
+  stopTimer();setKeys(null);
+  document.querySelectorAll('.modal').forEach(x=>x.remove());
+  const {sec,items,ans}=cur;let score=0;const correct=[];
+  items.forEach((it,k)=>{let ok=false;
+    if(sec.type==='mc')ok=ans[k]===it.a;
+    else if(sec.type==='num')ok=ans[k]!==null&&parseInt(ans[k],10)===it.a;
+    else ok=ans[k]===it.a;
+    correct.push(ok);if(ok)score++});
+  S.raw[sec.id]=score;S.used[sec.id]=Math.min(sec.limit,(Date.now()-cur.t0)/1000);
+  S.detail[sec.id]={correct,answered:ans.filter(a=>a!==null&&a!=='').length,timeout};
+  nextSection(timeout?`Čas vypršel – oddíl „${sec.name}“ je uzavřen.`:null);
+}
+function nextSection(msg){
+  const i=SECTIONS.findIndex(s=>s.id===(cur&&cur.sec?cur.sec.id:''));
+  cur=null;
+  const n=i+1;S.step=n+1;
+  if(msg)toast(msg);
+  if(n>=SECTIONS.length)return screenResults();
+  sectionIntro(n);
+}
+
+/* ---------- DIGIT SPAN ---------- */
+function digitStart(i){
+  cur={i,sec:SECTIONS[i],t0:Date.now(),phase:'fwd',len:3,trial:0,fails:0,res:{fwd:[],bwd:[]},maxF:0,maxB:0};
+  digitPhaseIntro();
+}
+function digitPhaseIntro(){
+  const f=cur.phase==='fwd';
+  app.innerHTML=`<div class="card fade center"><div class="eyebrow">${f?'Část 1 · vpřed':'Část 2 · pozpátku'}</div>
+  <h2>${f?'Zapiš čísla ve stejném pořadí':'Zapiš čísla POZPÁTKU'}</h2>
+  <p class="muted">${f?'Začínáme třemi číslicemi.':'Začínáme dvěma číslicemi. Poslední zobrazenou číslici napiš jako první.'}</p>
+  <button class="btn accent" onclick="digitTrial()">Spustit</button></div>`;
+}
+function genDigits(n){const a=[];while(a.length<n){const d=1+Math.floor(Math.random()*9);if(a.length&&(d===a[a.length-1]||Math.abs(d-a[a.length-1])===1&&Math.random()<.5))continue;a.push(d)}return a}
+function digitTrial(){
+  const seq=genDigits(cur.len);cur.seq=seq;
+  app.innerHTML=`<div class="card center"><div class="eyebrow">${cur.phase==='fwd'?'Vpřed':'Pozpátku'} · ${cur.len} číslic · pokus ${cur.trial+1}/2</div><div class="bigdigit" id="bd">·</div></div>`;
+  let k=0;const bd=$('#bd');
+  const show=()=>{if(k>=seq.length){bd.textContent='';setTimeout(digitInput,350);return}bd.textContent=seq[k];setTimeout(()=>{bd.textContent='';k++;setTimeout(show,200)},800)};
+  setTimeout(show,700);
+}
+function digitInput(){
+  app.innerHTML=`<div class="card center fade"><div class="eyebrow">${cur.phase==='fwd'?'Vpřed':'Pozpátku'} · ${cur.len} číslic</div>
+  <h3>${cur.phase==='fwd'?'Napiš číslice ve stejném pořadí':'Napiš číslice pozpátku'}</h3>
+  <div style="max-width:300px;margin:14px auto"><input type="text" inputmode="numeric" class="numinput" id="din" autocomplete="off" onkeydown="if(event.key==='Enter')digitSubmit()"></div>
+  <button class="btn" onclick="digitSubmit()">Potvrdit</button></div>`;
+  setTimeout(()=>$('#din').focus(),30);
+}
+function digitSubmit(){
+  const v=$('#din').value.replace(/\D/g,'');
+  const target=(cur.phase==='fwd'?cur.seq:cur.seq.slice().reverse()).join('');
+  const ok=v===target;
+  cur.res[cur.phase].push({len:cur.len,ok});
+  if(ok){if(cur.phase==='fwd')cur.maxF=Math.max(cur.maxF,cur.len);else cur.maxB=Math.max(cur.maxB,cur.len)}else cur.fails++;
+  cur.trial++;
+  const maxLen=cur.phase==='fwd'?9:8;
+  if(cur.trial===2){
+    const bothFail=cur.fails===2;cur.trial=0;cur.fails=0;
+    if(bothFail||cur.len===maxLen){
+      if(cur.phase==='fwd'){cur.phase='bwd';cur.len=2;return digitPhaseIntro()}
+      return digitFinish();
+    }
+    cur.len++;
+  }
+  app.innerHTML=`<div class="card center"><div class="bigdigit" style="font-size:2rem;min-height:6rem">…</div></div>`;
+  setTimeout(digitTrial,600);
+}
+function digitFinish(){
+  S.raw.dfwd=cur.res.fwd.filter(x=>x.ok).length;S.raw.dbwd=cur.res.bwd.filter(x=>x.ok).length;
+  S.detail.digit={maxF:cur.maxF,maxB:cur.maxB};S.used.digit=(Date.now()-cur.t0)/1000;
+  nextSection(null);
+}
+
+/* ---------- SYMBOL SEARCH ---------- */
+function ssGen(){
+  const pool=shuffle(GLYPHS.map((_,i)=>i));const t=pool.slice(0,2);const g=pool.slice(2,7);
+  const yes=Math.random()<.5;if(yes)g[Math.floor(Math.random()*5)]=t[Math.floor(Math.random()*2)];
+  return {t,g,yes};
+}
+function ssRender(tr,info){
+  return `<div class="row between"><div class="eyebrow" style="margin:0">${info}</div></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:14px">
+   <div class="targets">${tr.t.map(glyphSVG).join('')}</div>
+   <div class="searchbox">${tr.g.map(glyphSVG).join('')}</div>
+   <div class="row" style="gap:14px"><button class="btn accent" style="min-width:120px" onclick="ssAns(true)">← ANO</button><button class="btn" style="min-width:120px" onclick="ssAns(false)">NE →</button></div>
+   <div class="feedback" id="fb"></div></div>`;
+}
+function ssPractice(i){
+  cur={i,sec:SECTIONS[i],practice:4,tr:ssGen(),ok:0,bad:0,n:0};
+  app.innerHTML=`<div class="card" id="sc">${ssRender(cur.tr,'Cvičná úloha 1 / 4')}</div>`;
+  setKeys(ssKey);
+}
+function ssKey(e){if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A'){e.preventDefault();ssAns(true)}if(e.key==='ArrowRight'||e.key==='n'||e.key==='N'){e.preventDefault();ssAns(false)}}
+function ssAns(v){
+  if(!cur||cur.lock)return;
+  const ok=v===cur.tr.yes;
+  if(cur.practice>0){
+    cur.lock=true;$('#fb').innerHTML=ok?'<span style="color:var(--green)">Správně</span>':`<span style="color:var(--red)">Chyba – správně: ${cur.tr.yes?'ANO':'NE'}</span>`;
+    setTimeout(()=>{cur.lock=false;cur.practice--;if(cur.practice===0)return ssReady();cur.tr=ssGen();$('#sc').innerHTML=ssRender(cur.tr,`Cvičná úloha ${5-cur.practice} / 4`)},900);return;
+  }
+  cur.n++;if(ok)cur.ok++;else cur.bad++;
+  const c=$('#sc');c.classList.remove('flash-ok','flash-bad');void c.offsetWidth;c.classList.add(ok?'flash-ok':'flash-bad');
+  cur.tr=ssGen();c.innerHTML=ssRender(cur.tr,`Vyřešeno: ${cur.n}`);
+}
+function ssReady(){
+  setKeys(null);
+  app.innerHTML=`<div class="card center fade"><h2>Výborně, teď naostro</h2><p>90 sekund. Co nejrychleji a nejpřesněji.<br><b>←</b> / A = ANO, <b>→</b> / N = NE</p><button class="btn accent" onclick="ssGo()">Start</button></div>`;
+}
+function ssGo(){
+  cur.practice=0;cur.tr=ssGen();cur.t0=Date.now();cur.end=Date.now()+90000;
+  app.innerHTML=`<div class="card" id="sc">${ssRender(cur.tr,'Vyřešeno: 0')}</div>`;
+  setKeys(ssKey);setTimer(90);
+  tick=setInterval(()=>{const l=(cur.end-Date.now())/1000;setTimer(l);if(l<=0){stopTimer();setKeys(null);
+    S.raw.ssearch=Math.max(0,cur.ok-cur.bad);S.detail.ssearch={ok:cur.ok,bad:cur.bad,n:cur.n};S.used.ssearch=90;nextSection('Čas vypršel – hledání symbolů ukončeno.')}},200);
+}
+
+/* ---------- CODING (SDMT / WAIS Coding) ---------- */
+function codRender(info){
+  return `<div class="eyebrow">${info}</div>
+  <div class="key">${cur.key.map((g,d)=>`<div>${glyphSVG(g).replace('class="sym"','class="sym" style="width:100%;height:auto;max-width:44px"')}<b>${d+1}</b></div>`).join('')}</div>
+  <div style="display:flex;justify-content:center;margin-top:22px"><div style="border:2px solid var(--ink);border-radius:14px;padding:10px;background:#fff">${glyphSVG(cur.key[cur.target]).replace('class="sym"','class="sym" style="width:90px;height:90px"')}</div></div>
+  <div class="pad">${[1,2,3,4,5,6,7,8,9].map(d=>`<button onclick="codAns(${d})">${d}</button>`).join('')}</div>
+  <div class="feedback" id="fb"></div>`;
+}
+function codNext(){let t;do{t=Math.floor(Math.random()*9)}while(t===cur.target);cur.target=t}
+function codPractice(i){
+  const key=shuffle(GLYPHS.map((_,k)=>k),mulberry32(4242)).slice(0,9);
+  cur={i,sec:SECTIONS[i],key,target:-1,practice:4,ok:0,bad:0};codNext();
+  app.innerHTML=`<div class="card" id="sc">${codRender('Cvičná úloha 1 / 4')}</div>`;
+  setKeys(codKey);
+}
+function codKey(e){if(/^[1-9]$/.test(e.key)){e.preventDefault();codAns(+e.key)}}
+function codAns(d){
+  if(!cur||cur.lock)return;const ok=d-1===cur.target;
+  if(cur.practice>0){cur.lock=true;$('#fb').innerHTML=ok?'<span style="color:var(--green)">Správně</span>':`<span style="color:var(--red)">Chyba – správně: ${cur.target+1}</span>`;
+    setTimeout(()=>{cur.lock=false;cur.practice--;if(cur.practice===0)return codReady();codNext();$('#sc').innerHTML=codRender(`Cvičná úloha ${5-cur.practice} / 4`)},800);return}
+  if(ok)cur.ok++;else cur.bad++;
+  const c=$('#sc');c.classList.remove('flash-ok','flash-bad');void c.offsetWidth;c.classList.add(ok?'flash-ok':'flash-bad');
+  codNext();c.innerHTML=codRender(`Správně: ${cur.ok}`);
+}
+function codReady(){setKeys(null);app.innerHTML=`<div class="card center fade"><h2>Teď naostro</h2><p>90 sekund. Klíč zůstává stejný.</p><button class="btn accent" onclick="codGo()">Start</button></div>`}
+function codGo(){
+  cur.practice=0;codNext();cur.end=Date.now()+90000;
+  app.innerHTML=`<div class="card" id="sc">${codRender('Správně: 0')}</div>`;setKeys(codKey);setTimer(90);
+  tick=setInterval(()=>{const l=(cur.end-Date.now())/1000;setTimer(l);if(l<=0){stopTimer();setKeys(null);
+    S.raw.coding=cur.ok;S.detail.coding={ok:cur.ok,bad:cur.bad};S.used.coding=90;nextSection('Čas vypršel – kódování ukončeno.')}},200);
+}
+
+/* ============ SCORING ============ */
+function score(){
+  const p=S.p;const z={},ss={};
+  for(const k in SUBTESTS){
+    let [m,sd]=NORMS[k];const dom=DOMAIN[k];
+    m=m+ageOffset(dom,p.age)*sd;
+    if(dom==='gs'){if(p.device==='telefon')m*=.85;else if(p.device==='tablet')m*=.92}
+    const raw=S.raw[k]||0;
+    z[k]=clamp((raw-m)/sd,-3,3);ss[k]=clamp(Math.round(10+3*z[k]),1,19);
+  }
+  const idx={};
+  for(const I in INDEXES){const ks=Object.keys(SUBTESTS).filter(k=>SUBTESTS[k].idx===I);idx[I]=Math.round(clamp(100+15*mean(ks.map(k=>z[k]))/0.88,50,150))}
+  const all=Object.keys(SUBTESTS);
+  const fsZ=mean(all.map(k=>z[k]))/0.678;
+  const gaiK=all.filter(k=>['gc','gf'].includes(DOMAIN[k])),cpiK=all.filter(k=>['wm','gs'].includes(DOMAIN[k]));
+  const gai=Math.round(clamp(100+15*mean(gaiK.map(k=>z[k]))/0.736,50,150));
+  const cpi=Math.round(clamp(100+15*mean(cpiK.map(k=>z[k]))/0.716,50,150));
+  const iq=Math.round(clamp(100+15*fsZ,50,150));
+  return {z,ss,idx,iq,gai,cpi};
+}
+function category(v){
+  if(v>=130)return {l:'Velmi vysoký',d:'Tvůj odhadovaný výsledek patří zhruba k nejlepším 2 % populace tvého věku. V tomto pásmu se pohybují lidé, kterým jde snadno abstraktní uvažování i učení se zcela novým oborům.'};
+  if(v>=120)return {l:'Vysoký',d:'Tvůj výsledek je výrazně nad průměrem – zhruba v horních 9 % populace tvého věku. Náročné intelektuální úlohy a nové problémy pro tebe bývají přirozenou výzvou.'};
+  if(v>=110)return {l:'Vyšší průměr',d:'Tvůj výsledek je nad průměrem populace (zhruba horní čtvrtina). Spolehlivě zvládáš i náročnější abstraktní úlohy.'};
+  if(v>=90)return {l:'Průměr',d:'Tvůj výsledek leží v pásmu, kam patří zhruba polovina populace tvého věku. Je to pásmo, ve kterém se dá úspěšně zvládnout prakticky jakékoli vzdělání a povolání – rozhodující bývají motivace, znalosti a vytrvalost.'};
+  if(v>=80)return {l:'Nižší průměr',d:'Tvůj výsledek je mírně pod středem rozložení. U online testu to často souvisí s podmínkami (únava, rušení, spěch, neznámý typ úloh). Podívej se níže na konkrétní oblasti – profil bývá nerovnoměrný a silné stránky jsou důležitější než jedno číslo.'};
+  if(v>=70)return {l:'Podprůměr',d:'Výsledek v tomto pásmu u online testu nejčastěji odráží nestandardní podmínky – únavu, vyrušení, neznámý typ úloh nebo jazyk. Jedno číslo neříká nic o tvé hodnotě; podívej se na profil a silné stránky níže.'};
+  return {l:'Výrazně pod průměrem',d:'Výsledek v tomto pásmu online testu téměř vždy znamená, že test neproběhl za vhodných podmínek (přerušení, technické potíže, přeskakování úloh). Doporučujeme test zopakovat v klidu. Jakoukoli vážnější otázku může posoudit jen psycholog standardizovaným testem.'};
+}
+
+/* ============ TEXTS ============ */
+const INFO={
+VCI:{what:'Schopnost chápat význam slov, vztahy mezi pojmy a využívat naučené znalosti. V modelu CHC jde o krystalickou inteligenci (Gc), ve WAIS-IV o index verbálního porozumění. Je nejtěsněji spojena se vzděláním, čtením a celoživotním učením – a jako jediná oblast s věkem obvykle roste až do šedesáti let.',
+ hi:{t:'Pracuješ s jazykem přesně a s jistotou. Rychle chápeš, jak spolu pojmy souvisejí, a máš bohatou slovní zásobu i méně běžných výrazů.',p:['Snadno se učíš z textů, přednášek a dokumentace','Umíš přesně formulovat myšlenky ústně i písemně','Zachytíš jemné významové rozdíly (smlouvy, zadání, e-maily)'],m:['Můžeš spoléhat na slova i tam, kde by víc pomohl náčrt nebo data','Tvá vysvětlení můžou být pro ostatní příliš abstraktní']},
+ mid:{t:'Tvoje verbální schopnosti odpovídají běžné populaci – v každodenní komunikaci, čtení i učení nemáš nevýhodu.',p:['Spolehlivé porozumění běžným i odborným textům','Srozumitelná komunikace bez zbytečné složitosti'],m:['Méně častá a odborná slova mohou zpomalit čtení náročných textů','Je tu prostor pro přesnější formulace']},
+ lo:{t:'Verbální úlohy pro tebe byly náročnější. Často to neznamená horší myšlení, ale menší kontakt s náročnými texty – nebo to, že čeština není tvůj první jazyk.',p:['Pravděpodobně víc spoléháš na praktickou zkušenost a názornost','Mluvíš jednoduše a srozumitelně'],m:['Dlouhé a hutné texty (normy, smlouvy) mohou být únavné','Abstraktní slovní zadání může vést k nedorozumění']},
+ tips:['Čti pravidelně náročnější texty – odbornou literaturu, kvalitní publicistiku, beletrii. Slovní zásoba je nejlépe trénovatelná složka inteligence.','Neznámá slova si dohledávej a zkus je do týdne {sám|sama} použít.','Shrnuj přečtené vlastními slovy – trénuje to porozumění i vyjadřování.','Slovní hry (křížovky, Scrabble, hádanky s analogiemi) jsou příjemný doplněk.']},
+PRI:{what:'Schopnost řešit nové problémy bez opory naučených znalostí – hledat pravidla a vzorce ve vizuálním materiálu – a představovat si objekty v prostoru. Maticové úlohy jsou jádrem Ravenových progresivních matic, považovaných za jeden z nejčistších ukazatelů obecné inteligence (g). Mentální rotace vychází z klasických experimentů Sheparda a Metzlerové (1971).',
+ hi:{t:'Rychle odhaluješ skryté zákonitosti a dokážeš v duchu otáčet a skládat objekty. Nové problémy tě nezaskočí – instinktivně hledáš strukturu.',p:['Snadno se zorientuješ v nových situacích a systémech','Silná technická a konstrukční představivost (výkresy, 3D, mapy)','Dobře vidíš vzorce v datech a grafech'],m:['Rutinní úlohy bez výzvy tě mohou nudit','Občas přeskočíš vysvětlení kroků, které jsou pro tebe samozřejmé, ale pro ostatní ne']},
+ mid:{t:'Nové vizuální problémy řešíš na úrovni běžné populace. S jednotlivými pravidly si poradíš, u kombinace více pravidel najednou potřebuješ víc času.',p:['Spolehlivě zvládáš běžné technické a prostorové úlohy','Systematický postup u jednodušších vzorců'],m:['Úlohy s několika současně působícími pravidly jsou náročnější','Otáčení složitějších tvarů vyžaduje víc soustředění']},
+ lo:{t:'Hledání abstraktních vizuálních pravidel a prostorová představivost pro tebe byly náročnější. Pomáhá postupovat systematicky – jedno pravidlo po druhém.',p:['Pravděpodobně raději stavíš na ověřených postupech než na odhadu','Opatrnost – méně impulzivních rozhodnutí'],m:['Nové, nestrukturované problémy mohou být stresující','Orientace v plánech, mapách a výkresech může trvat déle']},
+ tips:['U maticových úloh analyzuj každou vlastnost (tvar, počet, výplň, orientaci) zvlášť po řádcích i sloupcích. Výzkum Carpentera, Justa a Shellové (1990) ukázal, že lepší řešitelé hlavně dokážou udržet víc pravidel současně.','Prostorová představivost je prokazatelně trénovatelná – stavebnice, 3D modelování (CAD), skládačky. Metaanalýza Uttal a kol. (2013) našla trvalé zlepšení i přenos na podobné úlohy.','Strategické hry a hlavolamy (šachy, Tetris, sudoku) zlepší výkon v podobných úlohách, přenos na obecnou inteligenci je ale malý.','Kresli si problémy – náčrt odlehčí pracovní paměti a zviditelní strukturu.']},
+QRI:{what:'Schopnost odhalovat číselné zákonitosti a vyvozovat platné závěry z předpokladů. Číselné řady patří ke klasickým úlohám kvantitativního uvažování (CogAT, Cattellovy testy), sylogismy měří deduktivní logiku a odolnost vůči tzv. belief bias – sklonu hodnotit argument podle toho, zda se nám líbí závěr (Evans, Barston a Pollard, 1983).',
+ hi:{t:'Přirozeně vidíš vztahy mezi čísly a bezpečně odlišíš platný argument od přesvědčivě znějícího, ale chybného.',p:['Rychlé odhady a kontrola výpočtů','Odhalíš logické klamy a chybnou argumentaci','Silná analytická práce s daty'],m:['Můžeš působit příliš kriticky, když ostatní argumentují intuitivně','Sklon zabřednout do detailu tam, kde stačí rychlý odhad']},
+ mid:{t:'Numerické a logické úlohy zvládáš na úrovni běžné populace; složitější kombinace operací ti zaberou víc času.',p:['Spolehlivě zvládáš běžné numerické a logické úlohy','Rozumný úsudek v každodenních situacích'],m:['Složitější řady (střídání operací, kombinace) jsou pomalejší','Formálně platné závěry, které odporují zkušenosti, mohou mást']},
+ lo:{t:'Číselné řady a formální logika pro tebe byly náročnější. V běžném životě to často vyvažuje praktická intuice – u důležitých rozhodnutí se ale vyplatí argumenty rozebrat krok za krokem.',p:['Spoléháš na praktickou zkušenost a intuici, která bývá v běžném životě užitečná'],m:['Riziko přijetí přesvědčivě znějících, ale logicky chybných argumentů','Práce s čísly a tabulkami může být pomalejší a únavnější']},
+ tips:['U řad si vždy vypiš rozdíly mezi členy – a pak rozdíly rozdílů. Zkus i podíly a možnost, že jde o dvě střídající se řady.','Zapamatuj si nejčastější klam: z „když A, pak B“ a „platí B“ NEplyne A.','Když hodnotíš argument, odděl obsah od struktury – nahraď slova písmeny A, B, C.','Mentální aritmetika, Fermiho odhady, logické hádanky a programování posilují tuto oblast.']},
+WMI:{what:'Schopnost krátkodobě udržet informace v mysli a zároveň s nimi pracovat. Opakování čísel vpřed měří hlavně rozsah krátkodobé paměti, opakování pozpátku navíc manipulaci s informacemi (exekutivní funkce). Typický rozsah dospělého je kolem 6–7 číslic vpřed a 4–5 pozpátku.',
+ hi:{t:'Udržíš v hlavě víc informací najednou a dokážeš s nimi současně pracovat – to je „pracovní plocha“ pro veškeré složitější myšlení.',p:['Zvládneš složité instrukce a výpočty z hlavy','Lépe snášíš přerušení a souběžné úkoly','Rychlejší učení nových postupů'],m:['Můžeš podceňovat poznámky – to se mstí při únavě','Ostatní tvé tempo s mnoha informacemi nemusí stíhat']},
+ mid:{t:'Běžné množství informací udržíš bez potíží; pracovní paměť odpovídá průměru populace.',p:['Bez problémů zvládáš každodenní úkoly','Vyvážený výkon i při menším rušení'],m:['Při mnoha podnětech najednou se může ztrácet přehled','Delší instrukce je dobré si zapsat']},
+ lo:{t:'Udržet a přeskládat delší řadu informací pro tebe bylo náročnější. Výborně fungují vnější pomůcky – poznámky, seznamy, nákresy.',p:['Pravděpodobně jsi {zvyklý|zvyklá} spoléhat na poznámky a systémy – spolehlivá strategie','Tendence soustředit se na jednu věc'],m:['Přerušování a multitasking výrazně snižují výkon','Dlouhé ústní instrukce se snadno ztratí']},
+ tips:['Používej seskupování (chunking) – čísla si pamatuj po dvojicích či trojicích (739 482 místo 7-3-9-4-8-2).','Externalizuj: poznámky, checklisty a nákresy uvolní kapacitu pro samotné myšlení.','Spánek, pohyb a omezení multitaskingu mají na pracovní paměť prokazatelný vliv.','Trénink typu dual n-back zlepší výkon hlavně v trénované úloze – metaanalýzy (Melby-Lervåg a Hulme, 2013) nenašly spolehlivý přenos na inteligenci. Ber ho spíš jako hru.']},
+PSI:{what:'Jak rychle a přesně dokážeš zpracovávat jednoduché vizuální informace – porovnávat, vyhledávat a kódovat. Odpovídá subtestům Hledání symbolů a Kódování z WAIS-IV a testu SDMT (Smith, 1973). Je to oblast nejcitlivější na věk, únavu, motivaci i ovládací zařízení.',
+ hi:{t:'Jednoduché informace zpracováváš rychle a přesně. Rutinní úkoly ti zaberou méně času i energie a zbyde ti kapacita na složitější myšlení.',p:['Rychlá orientace v tabulkách, formulářích a datech','Efektivní rutinní práce s menší únavou','Rychlé reakce a dobrá vizuální pozornost'],m:['Riziko chyb z přílišného spěchu – zkontroluj si přesnost níže','Pomalejší tempo ostatních tě může frustrovat']},
+ mid:{t:'Tvé tempo zpracování jednoduchých informací odpovídá běžné populaci.',p:['Vyvážený poměr rychlosti a přesnosti','Spolehlivé zvládání rutinních úkolů'],m:['Pod silným časovým tlakem může klesat přesnost','Monotónní úkoly mohou rychleji unavit']},
+ lo:{t:'Pod časovým tlakem pracuješ pomaleji. Často jde o pečlivý styl – a výkon také výrazně ovlivňuje zařízení, únava a zkušenost s podobnými úlohami.',p:['Často pečlivý, přesný styl práce s menším počtem chyb','Bez časového tlaku podáš výkon odpovídající ostatním schopnostem'],m:['Časový tlak (testy, termíny) může výkon nepřiměřeně snížit','Rutinní administrativa zabere víc času']},
+ tips:['Rychlost zpracování nejvíc ovlivňuje kvalitní spánek, aerobní pohyb a nižší stres.','Akční videohry prokazatelně zlepšují rychlost a rozložení vizuální pozornosti (Green a Bavelier, 2003).','Automatizuj rutinu – klávesové zkratky, šablony a makra ušetří kapacitu.','Dělej si pauzy: výkon v rychlostních úlohách klesá s únavou rychleji než v jiných oblastech.']},
+};
+function lvl(v){return v>=110?'hi':v>=90?'mid':'lo'}
+function lvlTxt(v){return v>=120?'vysoký':v>=110?'vyšší průměr':v>=90?'průměr':v>=80?'nižší průměr':'podprůměr'}
+
+/* ============ RESULTS ============ */
+let LAST=null;
+function bellSVG(iq){
+  const W=640,H=200,x0=30,x1=W-30,lo=55,hi=145;const X=v=>x0+(v-lo)/(hi-lo)*(x1-x0);const Y=v=>H-34-150*Math.exp(-Math.pow((v-100)/15,2)/2);
+  let d='',df='';for(let v=lo;v<=hi;v+=1){d+=(v===lo?'M':'L')+X(v).toFixed(1)+','+Y(v).toFixed(1)}
+  const ic=clamp(iq,lo,hi);
+  df=`M${X(lo)},${H-34}`;for(let v=lo;v<=ic;v+=.5)df+=`L${X(v).toFixed(1)},${Y(v).toFixed(1)}`;df+=`L${X(ic).toFixed(1)},${H-34}Z`;
+  const ticks=[70,80,90,100,110,120,130].map(v=>`<line x1="${X(v)}" x2="${X(v)}" y1="${H-34}" y2="${H-28}" stroke="#8a91a0"/><text x="${X(v)}" y="${H-14}" text-anchor="middle" font-size="11" font-family="IBM Plex Mono" fill="#8a91a0">${v}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto"><path d="${df}" fill="#e3efec"/><path d="${d}" fill="none" stroke="#2f6f6a" stroke-width="2.5"/><line x1="${x0}" x2="${x1}" y1="${H-34}" y2="${H-34}" stroke="#c9c3b4"/>${ticks}
+  <line x1="${X(ic)}" x2="${X(ic)}" y1="${Y(ic)-14}" y2="${H-34}" stroke="#1d2433" stroke-width="2"/><circle cx="${X(ic)}" cy="${Y(ic)-14}" r="5" fill="#1d2433"/>
+  <text x="${X(ic)}" y="${Y(ic)-26}" text-anchor="middle" font-family="Fraunces" font-weight="700" font-size="16" fill="#1d2433">${iq}</text></svg>`;
+}
+function profRow(lbl,sub,v,color){
+  const P=x=>((clamp(x,55,145)-55)/90*100);
+  const a=Math.min(P(v),P(100)),b=Math.max(P(v),P(100));
+  return `<div class="prow"><div class="lbl">${lbl}<small>${sub}</small></div>
+   <div class="track"><div class="base"></div><div class="zone" style="left:${P(90)}%;width:${P(110)-P(90)}%"></div><div class="mid" style="left:${P(100)}%"></div>
+   <div class="bar" style="left:${a}%;width:${b-a}%;background:${color};opacity:.35"></div><div class="pt" style="left:${P(v)}%;background:${color}"></div></div>
+   <div class="val">${v}</div></div>`;
+}
+function screenResults(){
+  stopTimer();setKeys(null);setTimer(null);setTop(true,'Vyhodnocení',1);
+  const R=score();LAST=R;const p=S.p;
+  const cat=category(R.iq);const pct=normCdf((R.iq-100)/15)*100;
+  const pctTxt=pct>=99.5?'> 99':pct<0.5?'< 1':Math.round(pct);
+  const ci=[Math.max(50,R.iq-9),Math.min(150,R.iq+9)];
+  const I=Object.keys(INDEXES);const meanI=mean(I.map(k=>R.idx[k]));
+  const sorted=I.slice().sort((a,b)=>R.idx[b]-R.idx[a]);
+  const strengths=sorted.filter(k=>R.idx[k]-meanI>=7||R.idx[k]>=112);
+  const weak=sorted.slice().reverse().filter(k=>meanI-R.idx[k]>=7||R.idx[k]<=88);
+  const S1=strengths.length?strengths.slice(0,3):[sorted[0]];
+  const W1=(weak.length?weak.slice(0,3):[sorted[sorted.length-1]]).filter(k=>!S1.includes(k));
+  if(!W1.length)W1.push(sorted[sorted.length-1]);
+  const range=R.idx[sorted[0]]-R.idx[sorted[sorted.length-1]];
+
+  /* insights */
+  const ins=[];
+  const vci=R.idx.VCI,nonv=(R.idx.PRI+R.idx.QRI)/2;
+  if(range<12)ins.push(['Vyrovnaný profil','Tvé schopnosti jsou rozložené velmi rovnoměrně (rozdíl mezi nejsilnější a nejslabší oblastí je jen '+range+' bodů). Celkové IQ tak dobře vystihuje tvé schopnosti a nemáš výraznou „slabinu“, kterou by bylo nutné kompenzovat.']);
+  else if(range>=25)ins.push(['Výrazně nerovnoměrný profil','Mezi tvou nejsilnější a nejslabší oblastí je '+range+' bodů. U takového profilu celkové IQ méně vypovídá – důležitější je podívat se na jednotlivé oblasti. Nerovnoměrný profil je běžný a často souvisí se zaměřením, vzděláním či zkušenostmi.']);
+  if(vci-nonv>=12)ins.push(['Verbálně orientovaný styl myšlení','Se slovy a pojmy pracuješ výrazně lépe než s abstraktními vizuálními a číselnými vzorci. Nejlépe se učíš čtením a výkladem; nové technické problémy si pomáhej převádět do slov („nejdřív se mění tvar, pak počet…“).']);
+  if(nonv-vci>=12)ins.push(['Analyticko-vizuální styl myšlení','Abstraktní vzorce, čísla a logika ti jdou výrazně lépe než slovní úlohy. Typické pro technicky a přírodovědně zaměřené lidi'+(p.native==='ne'?' – a také pro lidi, jejichž mateřštinou není čeština':'')+'. Nejlépe se učíš z diagramů, příkladů a vlastního zkoušení.']);
+  if(R.gai-R.cpi>=12)ins.push(['Uvažování silnější než „výkonnostní nástroje“',`Tvé schopnosti uvažování (GAI ${R.gai}) jsou výrazně vyšší než pracovní paměť a rychlost (CPI ${R.cpi}). Ve WAIS-IV se tento rozdíl sleduje právě proto, že u takových lidí podceňuje časový tlak jejich skutečné možnosti. Nejlepší výkon podáš v klidu, s možností poznámek a bez spěchu.`]);
+  if(R.cpi-R.gai>=12)ins.push(['Rychlý a výkonný zpracovatel',`Pracovní paměť a rychlost (CPI ${R.cpi}) jsou silnější než tvé abstraktní uvažování (GAI ${R.gai}). Prakticky to znamená, že zvládáš velké množství informací a rutinní práci rychle a efektivně. Rezervy jsou spíš v hloubce abstrakce – tam se vyplatí zpomalit a postupovat systematicky.`]);
+  if(R.idx.PSI<=Math.min(R.idx.PRI,R.idx.VCI,R.idx.QRI)-12)ins.push(['Přesnost před rychlostí','Rychlost zpracování je tvou nejslabší oblastí vzhledem k uvažování. Myslíš dobře, ale potřebuješ na to čas. U rychlostních testů hraje velkou roli také zařízení – na telefonu nebo touchpadu je výkon přirozeně nižší.']);
+
+  /* error analysis */
+  const ea=[];
+  const L=S.detail.logic;if(L){
+    const wrongTags=LOGIC.map((x,k)=>L.correct[k]?null:x.tag).filter(Boolean);
+    if(wrongTags.includes('potvrzení důsledku'))ea.push('<b>Logika – klam potvrzení důsledku:</b> z „když prší, je mokro“ a „je mokro“ ještě neplyne, že pršelo (mohlo se kropit). Tento klam dělá v laboratorních studiích i většina vysokoškoláků.');
+    if(wrongTags.includes('belief bias'))ea.push('<b>Logika – belief bias:</b> úsudek o lodích je logicky platný, i když je závěr ve skutečnosti nepravdivý. Mozek má sklon hodnotit argumenty podle uvěřitelnosti závěru – dobré si to hlídat třeba u reklam nebo politických argumentů.');
+    if(wrongTags.includes('nedovolené zobecnění'))ea.push('<b>Logika – nedovolené zobecnění:</b> z toho, že „některé B mají vlastnost X“, neplyne nic o konkrétní podskupině A. Zkus si takové úsudky kreslit jako Vennovy diagramy.');
+    if(!wrongTags.length)ea.push('<b>Logika:</b> všechny úsudky správně – včetně záludných typů (potvrzení důsledku, belief bias), na kterých chybuje většina lidí. Výborná disciplína myšlení.');
+  }
+  const M=S.detail.matrix;if(M){const by=l=>{const ks=MATS.map((m,k)=>m.lvl===l?k:-1).filter(k=>k>=0);return [ks.filter(k=>M.correct[k]).length,ks.length]};const [a1,n1]=by(1),[a2,n2]=by(2),[a3,n3]=by(3);
+    let t=`<b>Matice:</b> lehké ${a1}/${n1}, střední ${a2}/${n2}, těžké ${a3}/${n3}. `;
+    if(a1<n1-1)t+='Chyby už v lehkých úlohách často znamenají spěch nebo nepozornost – vyplatí se prohlédnout celý řádek i sloupec.';
+    else if(a3>=n3-1)t+='Zvládl{|a} jsi i nejtěžší úlohy s více pravidly a operacemi s čarami – to je doména nadprůměrně schopných řešitelů.';
+    else if(a2>=n2-1)t+='Spolehlivě zvládáš úlohy se dvěma pravidly; rezerva je u úloh, kde se kombinují tři pravidla nebo operace s čarami (sčítání, rozdíl, průnik).';
+    else t+='Hranice leží u úloh s více současně platnými pravidly – zkus příště každou vlastnost analyzovat zvlášť.';
+    ea.push(t)}
+  const SE=S.detail.series;if(SE){const wrong=[...new Set(SERIES.map((x,k)=>SE.correct[k]?null:x.t).filter(Boolean))];if(wrong.length)ea.push(`<b>Číselné řady:</b> potíže dělaly typy: ${wrong.join(', ')}.`);else ea.push('<b>Číselné řady:</b> všechny správně – včetně faktoriálu a kombinovaných operací.')}
+  const D=S.detail.digit;if(D){let t=`<b>Pracovní paměť:</b> nejdelší správná řada vpřed <b>${D.maxF||'–'}</b>, pozpátku <b>${D.maxB||'–'}</b> číslic (typicky 6–7 vpřed a 4–5 pozpátku). `;
+    if(D.maxF-D.maxB>=3)t+='Velký rozdíl mezi vpřed a pozpátku ukazuje, že udržet informace zvládáš lépe než s nimi manipulovat – zkus si při pozpátku číslice „vizualizovat“ jako řádek a číst ho zprava.';
+    else if(D.maxB>=D.maxF-1&&D.maxB>=5)t+='Malý rozdíl mezi vpřed a pozpátku svědčí o dobré schopnosti s informacemi aktivně pracovat.';
+    ea.push(t)}
+  const SS=S.detail.ssearch;if(SS){const acc=SS.n?Math.round(SS.ok/SS.n*100):0;let t=`<b>Hledání symbolů:</b> ${SS.n} odpovědí, přesnost ${acc} %. `;
+    if(acc<85)t+='Přesnost pod 85 % naznačuje, že jsi upřednostnil{|a} rychlost – chyby se odečítají, takže by pomohlo mírně zpomalit.';
+    else if(acc>=97)t+='Velmi vysoká přesnost – pracuješ pečlivě; případná rezerva je jen v tempu.';
+    else t+='Dobrý poměr rychlosti a přesnosti.';ea.push(t)}
+
+  /* context notes */
+  const notes=[];
+  notes.push(`Výsledky jsou přepočteny na orientační normy pro věk <b>${p.age} let</b> – každá oblast se s věkem vyvíjí jinak (fluidní uvažování a rychlost od cca 30 let pozvolna klesají, slovní zásoba roste).`);
+  if(p.age<16)notes.push('Ve věku pod 16 let se schopnosti ještě rychle vyvíjejí a orientační normy jsou méně přesné.');
+  if(p.native==='ne')notes.push('Čeština není tvůj mateřský jazyk – verbální oblast proto pravděpodobně <b>podhodnocuje</b> tvé schopnosti. Spolehlivějším ukazatelem je pro tebe neverbální uvažování.');
+  if(p.fatigue>=3)notes.push('Uvedl{|a} jsi únavu – ta prokazatelně snižuje hlavně pracovní paměť a rychlost. Skutečný výsledek může být o několik bodů vyšší.');
+  if(p.exp==='často')notes.push('S IQ testy máš zkušenost – tzv. efekt nácviku může výsledek mírně nadhodnotit (studie uvádějí zhruba 2–6 bodů).');
+  if(p.device!=='počítač')notes.push(`Test proběhl na zařízení „${p.device}“ – normy rychlostních úloh jsou proto upraveny, i tak může být rychlost mírně podhodnocená.`);
+  if(p.env==='rušné')notes.push('Rušné prostředí snižuje výkon hlavně v pracovní paměti a rychlostních úlohách.');
+  const totalMin=Math.round((Date.now()-S.startedAt)/60000);
+
+  const g=gx;
+  const sw=(k,type)=>{const v=R.idx[k],i=INFO[k][lvl(v)];return `<div class="it"><b>${INDEXES[k].name} · ${v}</b><span class="small">${type==='s'?g(i.p[0]):g(i.m[0])}</span></div>`};
+
+  app.innerHTML=`<div class="fade">
+  <div class="card hero">
+    <div class="eyebrow">Vyhodnocení · ${esc(p.name)}, ${p.age} let</div>
+    <div class="small muted">Odhadované celkové IQ</div>
+    <div class="iq">${R.iq}</div>
+    <div class="cat">${cat.l}</div>
+    <div style="max-width:620px;margin:18px auto 0">${bellSVG(R.iq)}</div>
+    <div class="kpis">
+      <div class="kpi"><b>${pctTxt}. percentil</b><span>Ze 100 lidí tvého věku bys byl{|a} lepší než ${pctTxt==='> 99'?'99':pctTxt==='< 1'?'méně než 1':pctTxt}</span></div>
+      <div class="kpi"><b>${ci[0]}–${ci[1]}</b><span>Pravděpodobné rozmezí (90% interval spolehlivosti)</span></div>
+      <div class="kpi"><b>${totalMin} min</b><span>Celková doba testu</span></div>
+    </div>
+    <p style="max-width:640px;margin:22px auto 0;text-align:left">${g(cat.d)}</p>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Profil schopností</div>
+    <h2>Pět oblastí myšlení</h2>
+    <p class="muted small">Indexové skóre má průměr 100 a směrodatnou odchylku 15 (stejně jako IQ). Šedé pásmo 90–110 je průměr.</p>
+    ${I.map(k=>profRow(INDEXES[k].name,INDEXES[k].chc,R.idx[k],INDEXES[k].color)).join('')}
+    <div class="scale"><span>55</span><span>70</span><span>85</span><span>100</span><span>115</span><span>130</span><span>145</span></div>
+    <div style="border-top:1px solid var(--line);margin-top:18px;padding-top:6px">
+    ${profRow('GAI · obecné uvažování','verbální + fluidní + kvantitativní',R.gai,'#1d2433')}
+    ${profRow('CPI · kognitivní výkonnost','pracovní paměť + rychlost',R.cpi,'#8a91a0')}
+    </div>
+    <p class="small muted">GAI a CPI jsou doplňkové indexy z WAIS-IV. GAI ukazuje „čisté“ uvažování bez vlivu paměti a rychlosti, CPI to, jak efektivně zpracováváš informace.</p>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Shrnutí</div>
+    <h2>V čem jsi dobr{ý|á} a kde máš rezervy</h2>
+    <div class="sw">
+      <div class="swbox s"><h3>💪 Silné stránky</h3>${S1.map(k=>sw(k,'s')).join('')}</div>
+      <div class="swbox w"><h3>🌱 Rezervy</h3>${W1.map(k=>sw(k,'w')).join('')}</div>
+    </div>
+    <p class="small muted" style="margin-top:12px">Silné stránky a rezervy jsou určené jak vůči populaci, tak vůči tvému vlastnímu průměru (${Math.round(meanI)}) – stejně jako to dělá psycholog při interpretaci WAIS. I člověk s vysokým IQ má oblasti, které jsou u něj relativně slabší.</p>
+    ${ins.map(x=>`<div class="insight"><b>${x[0]}</b>${g(x[1])}</div>`).join('')}
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Podrobný rozbor</div>
+    <h2>Jednotlivé oblasti</h2>
+    ${I.map(k=>{const v=R.idx[k],L_=lvl(v),inf=INFO[k],t=inf[L_];const subs=Object.keys(SUBTESTS).filter(s=>SUBTESTS[s].idx===k);
+      const rel=v-meanI>=7?'<span class="tag s">relativně silná</span>':meanI-v>=7?'<span class="tag w">relativní rezerva</span>':'<span class="tag nn">v rámci tvého průměru</span>';
+      return `<div class="idx"><div class="idxhead"><div><h3 style="margin:0;color:${INDEXES[k].color}">${INDEXES[k].name}</h3><div class="small muted">${INDEXES[k].chc}</div></div><div style="text-align:right"><span class="n">${v}</span><div class="small">${lvlTxt(v)} · ${Math.round(normCdf((v-100)/15)*100)}. percentil ${rel}</div></div></div>
+      <p class="small muted" style="margin-top:10px"><b>Co měří:</b> ${inf.what}</p>
+      <p>${g(t.t)}</p>
+      <div class="pm"><div class="p"><h4>Plusy</h4><ul class="clean">${t.p.map(x=>`<li>${g(x)}</li>`).join('')}</ul></div><div class="m"><h4>Mínusy</h4><ul class="clean">${t.m.map(x=>`<li>${g(x)}</li>`).join('')}</ul></div></div>
+      <div class="small" style="margin:8px 0">${subs.map(s=>`${SUBTESTS[s].name}: <b>${S.raw[s]||0}${SUBTESTS[s].max?'/'+SUBTESTS[s].max:''}</b> (vážené skóre ${R.ss[s]})`).join(' · ')}</div>
+      <div class="tips"><h4>Jak rozvíjet</h4><ul class="clean">${(L_==='hi'?inf.tips.slice(0,2):inf.tips).map(x=>`<li>${g(x)}</li>`).join('')}</ul></div></div>`}).join('')}
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Subtesty</div>
+    <h2>Detailní výsledky</h2>
+    <p class="muted small">Vážené skóre 1–19 (průměr 10, SD 3) – stejná škála jako u subtestů WAIS. 8–12 je průměr.</p>
+    <div style="overflow-x:auto"><table class="sub"><thead><tr><th>Subtest</th><th>Hrubé skóre</th><th>Vážené</th><th></th></tr></thead><tbody>
+    ${Object.keys(SUBTESTS).map(s=>{const v=R.ss[s];return `<tr><td>${SUBTESTS[s].name}<div class="small muted">${INDEXES[SUBTESTS[s].idx].name}</div></td><td>${S.raw[s]||0}${SUBTESTS[s].max?' / '+SUBTESTS[s].max:''}</td><td><b>${v}</b></td><td><span class="ss">${Array.from({length:19},(_,k)=>`<i class="${k<v?'f':''}"></i>`).join('')}</span></td></tr>`}).join('')}
+    </tbody></table></div>
+    <h3 style="margin-top:24px">Analýza chyb a stylu řešení</h3>
+    ${ea.map(x=>`<div class="insight">${g(x)}</div>`).join('')}
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Interpretace</div>
+    <h2>Co ovlivnilo výsledek</h2>
+    ${notes.map(x=>`<div class="note">${g(x)}</div>`).join('')}
+    ${p.field?`<p>Obor <b>${esc(p.field)}</b>: ${R.idx.PRI>=R.idx.VCI?'tvé nejsilnější stránky leží v neverbálním uvažování – v technických a analytických profesích je to přímo využitelná výhoda.':'tvá síla v jazyce je výhodou všude, kde se pracuje s dokumentací, komunikací se zákazníky a vysvětlováním.'}</p>`:''}
+    <p class="small muted">Inteligence je jen jedna z mnoha věcí, které předpovídají úspěch. Studie dlouhodobě ukazují, že svědomitost, motivace, znalosti a sociální dovednosti hrají srovnatelně velkou roli. IQ také není neměnné – v populaci roste se vzděláním (tzv. Flynnův efekt) a jednotlivé složky se dají rozvíjet.</p>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Metodika</div>
+    <h2>Na čem test stojí</h2>
+    <p class="small">Struktura testu kopíruje indexový model <b>WAIS-IV</b> doplněný o kvantitativní a logické uvažování podle modelu <b>CHC</b>. Hrubá skóre se převádějí na z-skóre podle orientačních věkových norem, dále na vážená skóre (1–19) a indexy (100 ± 15). Kompozitní skóre je korigováno na vzájemnou korelaci subtestů, takže nejde o pouhý průměr – stejně jako ve standardizovaných testech.</p>
+    <ul class="refs">
+      <li>Wechsler, D. (2008). <i>WAIS-IV: Wechsler Adult Intelligence Scale – Fourth Edition.</i> Pearson. – indexy VCI, PRI, WMI, PSI, GAI/CPI; subtesty Opakování čísel, Hledání symbolů, Kódování.</li>
+      <li>Raven, J. C. (1938/1962). <i>Progressive Matrices / Advanced Progressive Matrices.</i> – maticové úlohy.</li>
+      <li>Carpenter, P. A., Just, M. A., & Shell, P. (1990). What one intelligence test measures. <i>Psychological Review, 97</i>(3). – pravidla matic (progrese, distribuce tří hodnot, sčítání/odčítání čar).</li>
+      <li>Shepard, R. N., & Metzler, J. (1971). Mental rotation of three-dimensional objects. <i>Science, 171.</i></li>
+      <li>Smith, A. (1973). <i>Symbol Digit Modalities Test.</i> – kódování symbolů.</li>
+      <li>Evans, J. St. B. T., Barston, J. L., & Pollard, P. (1983). On the conflict between logic and belief in syllogistic reasoning. <i>Memory & Cognition, 11.</i></li>
+      <li>McGrew, K. S. (2009). CHC theory and the human cognitive abilities project. <i>Intelligence, 37.</i></li>
+      <li>Salthouse, T. A. (2009). When does age-related cognitive decline begin? <i>Neurobiology of Aging, 30.</i> – věkové trendy.</li>
+      <li>Uttal, D. H. a kol. (2013). The malleability of spatial skills. <i>Psychological Bulletin, 139.</i></li>
+      <li>Melby-Lervåg, M., & Hulme, C. (2013). Is working memory training effective? <i>Developmental Psychology, 49.</i></li>
+    </ul>
+    <div class="note"><b>Důležité omezení:</b> Tento test nebyl standardizován na reprezentativním vzorku české populace – normy jsou orientační, odvozené z obtížnosti úloh a publikovaných výkonů v podobných testech. Výsledek ber jako kvalifikovaný odhad (typická odchylka od profesionálního testu může být ±10 bodů), ne jako psychologickou diagnózu. Přesné měření provádí pouze psycholog standardizovaným testem.</div>
+  </div>
+
+  <div class="card center">
+    <div class="row" style="justify-content:center">
+      <button class="btn accent" onclick="copySummary()">📋 Kopírovat souhrn</button>
+      <button class="btn ghost" onclick="restart()">Udělat test znovu</button>
+    </div>
+  </div></div>`;
+  app.innerHTML=app.innerHTML.replace(/\{([^|}<]*)\|([^}<]*)\}/g,(m,a,b)=>gx(m));
+  window.scrollTo(0,0);
+}
+function copySummary(){
+  const R=LAST,p=S.p;
+  const t=`NOUS – test inteligence\n${p.name}, ${p.age} let\n\nCelkové IQ (odhad): ${R.iq} – ${category(R.iq).l}\nGAI (uvažování): ${R.gai} · CPI (výkonnost): ${R.cpi}\n\n`+Object.keys(INDEXES).map(k=>`${INDEXES[k].name}: ${R.idx[k]}`).join('\n')+'\n\nSubtesty (vážené skóre 1–19):\n'+Object.keys(SUBTESTS).map(s=>`  ${SUBTESTS[s].name}: ${R.ss[s]} (hrubé ${S.raw[s]||0}${SUBTESTS[s].max?'/'+SUBTESTS[s].max:''})`).join('\n')+'\n\nOrientační odhad, nejde o klinickou diagnostiku.';
+  try{navigator.clipboard.writeText(t).then(()=>toast('Souhrn zkopírován do schránky'),()=>toast('Kopírování se nezdařilo'))}catch(e){toast('Kopírování se nezdařilo')}
+}
+function restart(){S={p:null,step:0,raw:{},used:{},detail:{},startedAt:null};cur=null;screenWelcome()}
+
+/* debug: #demo shows results with simulated answers */
+function demo(){S={p:{name:'Demo',age:35,gender:'m',edu:'4',field:'inženýr',native:'ano',fatigue:2,exp:'nikdy',device:'počítač',env:'klidné'},step:9,raw:{analog:10,vocab:8,matrix:9,rotate:8,series:9,logic:8,dfwd:10,dbwd:8,ssearch:33,coding:41},used:{},detail:{},startedAt:Date.now()-33*60000};prepItems();
+  S.detail.logic={correct:LOGIC.map((x,k)=>k!==5)};S.detail.matrix={correct:MATS.map((m,k)=>k<9)};S.detail.series={correct:SERIES.map((x,k)=>k!==9)};S.detail.digit={maxF:7,maxB:5};S.detail.ssearch={ok:35,bad:2,n:37};screenResults()}
+if(location.hash==='#demo')demo();else screenWelcome();
+</script>
+</body>
+</html>
