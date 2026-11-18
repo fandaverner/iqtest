@@ -236,7 +236,7 @@ const MATRIX_SPECS=[
   {lvl:2,f:(r,c)=>({shape:['circle','triangle','cross'][(r+c)%3],count:[3,2,1][(r+2*c)%3],fill:['black','grey','none'][c],rot:0})},
   {lvl:2,f:(r,c)=>({shape:'triangle',rot:(c*90+r*45)%360,count:[1,2,3][(r+c)%3],fill:'grey'})},
   {lvl:2,f:(r,c)=>({shape:['square','pentagon','circle'][(r+c)%3],fill:['none','black','grey'][(r+2*c)%3],count:[1,2,3][r],rot:0})},
-  {lvl:2,f:(r,c)=>({shape:['diamond','circle','triangle'][(r+2*c)%3],count:[1,2,3][(r+c)%3],fill:['grey','none','black'][(r+c)%3],size:[.62,.82,1][c],rot:0})},
+  {lvl:2,f:(r,c)=>({shape:['diamond','circle','triangle'][(r+2*c)%3],count:[1,2,3][(r+c)%3],fill:['grey','none','black'][(r+c)%3],size:[.5,.75,1][c],rot:0})},
   {lvl:3,lines:'or',seed:11},
   {lvl:3,f:(r,c)=>({shape:['cross','pentagon','diamond'][(r+c)%3],count:[1,2,3][(r+2*c)%3],fill:['none','grey','black'][(2*r+c)%3],rot:0})},
   {lvl:3,lines:'xor',seed:23},
@@ -271,7 +271,7 @@ function buildAttrMatrix(spec,seed){
   const keys=['shape','count','fill','rot','size'];
   const val=(c,k)=>k==='size'?(c.size||1):c[k];
   const vary=keys.filter(k=>new Set(cells.map(c=>val(c,k))).size>1&&(k!=='rot'||ans.shape==='triangle'));
-  const dom={shape:SH,count:[1,2,3,4],fill:['none','grey','black'],rot:[0,90,180,270,45,135],size:[.62,.82,1]};
+  const dom={shape:SH,count:[1,2,3,4],fill:['none','grey','black'],rot:[0,90,180,270,45,135],size:[.5,.75,1]};
   const seen=new Set([cellKey(ans)]);const c1=[],c2=[],c3=[];
   const push=(arr,c)=>{const k=cellKey(c);if(!seen.has(k)){seen.add(k);arr.push(c)}};
   for(const k of vary){for(const v of new Set(cells.map(c=>val(c,k))))if(v!==val(ans,k))push(c1,{...ans,[k]:v})}
@@ -412,7 +412,7 @@ const SECTIONS=[
    ex:'<b>Příklad:</b> ruka : rukavice = noha : ? → <b>ponožka</b> (to, co se na ni obléká).'},
   {id:'matrix',name:'Maticové úlohy',type:'matrix',limit:660,
    intro:'Každá matice 3 × 3 je sestavena podle jednoho nebo více pravidel, která platí v <b>řádcích i sloupcích</b> (tvar, počet, výplň, orientace, velikost… nebo skládání čar). Vyber z 8 možností obrazec, který patří na místo otazníku.',
-   ex:'<b>Tip:</b> Sleduj každou vlastnost zvlášť. U úloh s čarami zkus, zda třetí políčko nevzniká „sečtením“ nebo „odečtením“ prvních dvou.'},
+   ex:'<b>Tip:</b> Sleduj každou vlastnost zvlášť – i <b>velikost</b> tvarů může být jedním z pravidel, takže dvě možnosti se mohou lišit jen velikostí. U úloh s čarami zkus, zda třetí políčko nevzniká „sečtením“ nebo „odečtením“ prvních dvou.'},
   {id:'digit',name:'Opakování čísel',type:'digit',
    intro:'Na obrazovce se po jedné objeví číslice. Zapamatuj si je a poté je zapiš. V první části <b>ve stejném pořadí</b>, ve druhé části <b>pozpátku</b>. Řady se postupně prodlužují; test končí, když se ti nepovedou oba pokusy stejné délky.',
    ex:'<b>Příklad pozpátku:</b> uvidíš 5 – 8 – 2 → zapíšeš <b>285</b>. Nic si nezapisuj na papír, jde o paměť.'},
@@ -423,8 +423,8 @@ const SECTIONS=[
    intro:'Vlevo je vzorový tvar. Vyber ze čtyř možností ten, který je <b>stejný tvar, jen otočený</b> v rovině. Ostatní jsou zrcadlově převrácené nebo jinak pozměněné – ty nelze dostat pouhým otočením.',
    ex:'<b>Tip:</b> Najdi na tvaru výrazný „roh“ nebo výběžek a v duchu ho otáčej. Tvar se nesmí překlopit jako v zrcadle.'},
   {id:'ssearch',name:'Hledání symbolů',type:'ssearch',limit:90,
-   intro:'Vlevo nahoře jsou dva <b>cílové symboly</b>. Rozhodni co nejrychleji, zda se <b>některý z nich</b> nachází ve skupině pěti symbolů pod nimi. Na úlohu máš 90 sekund, počítá se rychlost i přesnost (chyby se odečítají).',
-   ex:'<b>Ovládání:</b> tlačítka ANO / NE, na klávesnici <b>←</b> = ANO, <b>→</b> = NE (nebo A / N). Nejdřív si to vyzkoušíš na 4 cvičných úlohách.'},
+   intro:'Vlevo nahoře jsou dva <b>cílové symboly</b>. Rozhodni co nejrychleji, zda se <b>některý z nich</b> nachází ve skupině pěti symbolů pod nimi. Symbol se shoduje jen tehdy, když je <b>úplně stejný – tvar i vybarvení</b> (plný ● a prázdný ○ kruh jsou dva různé symboly; u půlkruhů rozhoduje i to, <b>která polovina</b> je vybarvená). Na úlohu máš 90 sekund, počítá se rychlost i přesnost (chyby se odečítají).',
+   ex:'<div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-bottom:8px"><span>Cíle: '+glyphSVG(1)+glyphSVG(4)+'</span><span>Skupina: '+glyphSVG(0)+glyphSVG(5)+glyphSVG(2)+glyphSVG(7)+glyphSVG(12)+' → <b>NE</b> (je tu prázdný kruh a plný trojúhelník – liší se vybarvením)</span></div><b>Ovládání:</b> tlačítka ANO / NE, na klávesnici <b>←</b> = ANO, <b>→</b> = NE (nebo A / N). Nejdřív si to vyzkoušíš na 4 cvičných úlohách.'},
   {id:'coding',name:'Kódování symbolů',type:'coding',limit:90,
    intro:'Nahoře je <b>klíč</b>: každý symbol má přiřazenou číslici 1–9. Uprostřed se objeví symbol – co nejrychleji stiskni jeho číslici. Na úlohu máš 90 sekund.',
    ex:'<b>Ovládání:</b> klávesy 1–9 nebo tlačítka. Nejdřív 4 cvičné úlohy. Klíč se během testu nemění – je výhodné si ho postupně zapamatovat.'},
@@ -569,7 +569,8 @@ function sectionIntro(i){
     <p>${sec.intro}</p>
     <div class="example">${sec.ex}</div>
     ${i===0?`<p class="small muted">${esc(S.p.name)}, úlohy jsou seřazeny od nejlehčích po nejtěžší. Na konci je normální nevědět – test je navržen tak, aby i velmi schopní lidé narazili na strop.</p>`:''}
-    <div class="row" style="margin-top:14px"><button class="btn accent" onclick="startSection(${i})">Začít oddíl</button></div>
+    ${S.redo?`<div class="note"><b>Oprava oddílu.</b> ${['digit','ssearch','coding'].includes(sec.id)?'Tento oddíl se dělá celý znovu – započítá se nový výsledek.':'Tvoje původní odpovědi zůstanou předvyplněné, můžeš je změnit. Časový limit běží znovu celý.'} Opravený oddíl bude ve výsledcích označený, protože opakování obvykle výsledek mírně zlepší.</div>`:''}
+    <div class="row between" style="margin-top:14px">${S.redo?`<button class="btn ghost" onclick="S.redo=false;screenResults()">← Zpět na výsledky</button>`:''}<button class="btn accent" onclick="startSection(${i})">${S.redo?'Opravit oddíl':'Začít oddíl'}</button></div>
   </div>`;
   window.scrollTo(0,0);
 }
@@ -579,7 +580,8 @@ function startSection(i){
   if(sec.type==='ssearch')return ssPractice(i);
   if(sec.type==='coding')return codPractice(i);
   const items=sec.type==='matrix'?MATS:sec.type==='rotate'?ROTS:sec.type==='num'?SERIES:sec.id==='analog'?ANALOG_O:sec.id==='vocab'?VOCAB_O:LOGIC;
-  cur={i,sec,items,idx:0,ans:new Array(items.length).fill(null),t0:Date.now(),end:Date.now()+sec.limit*1000};
+  const prev=S.redo&&S.detail[sec.id]&&S.detail[sec.id].ans;
+  cur={i,sec,items,idx:0,ans:prev?prev.slice():new Array(items.length).fill(null),t0:Date.now(),end:Date.now()+sec.limit*1000};
   setTimer(sec.limit);
   tick=setInterval(()=>{const left=(cur.end-Date.now())/1000;setTimer(left);if(left<=0){finishItems(true)}},250);
   renderItem();
@@ -651,14 +653,15 @@ function finishItems(timeout){
     else ok=ans[k]===it.a;
     correct.push(ok);if(ok)score++});
   S.raw[sec.id]=score;S.used[sec.id]=Math.min(sec.limit,(Date.now()-cur.t0)/1000);
-  S.detail[sec.id]={correct,answered:ans.filter(a=>a!==null&&a!=='').length,timeout};
+  S.detail[sec.id]={ans:ans.slice(),correct,answered:ans.filter(a=>a!==null&&a!=='').length,timeout};
   nextSection(timeout?`Čas vypršel – oddíl „${sec.name}“ je uzavřen.`:null);
 }
 function nextSection(msg){
   const i=SECTIONS.findIndex(s=>s.id===(cur&&cur.sec?cur.sec.id:''));
   cur=null;
-  const n=i+1;S.step=n+1;
   if(msg)toast(msg);
+  if(S.redo){S.redo=false;S.retaken=S.retaken||{};S.retaken[SECTIONS[i].id]=true;return screenResults()}
+  const n=i+1;S.step=n+1;
   if(n>=SECTIONS.length)return screenResults();
   sectionIntro(n);
 }
@@ -739,7 +742,7 @@ function ssAns(v){
   if(!cur||cur.lock)return;
   const ok=v===cur.tr.yes;
   if(cur.practice>0){
-    cur.lock=true;$('#fb').innerHTML=ok?'<span style="color:var(--green)">Správně</span>':`<span style="color:var(--red)">Chyba – správně: ${cur.tr.yes?'ANO':'NE'}</span>`;
+    cur.lock=true;$('#fb').innerHTML=ok?'<span style="color:var(--green)">Správně</span>':`<span style="color:var(--red)">Chyba – správně: ${cur.tr.yes?'ANO':'NE'}</span><div class="small muted" style="font-weight:400">Shoda platí jen pro úplně stejný symbol – tvar i vybarvení.</div>`;
     setTimeout(()=>{cur.lock=false;cur.practice--;if(cur.practice===0)return ssReady();cur.tr=ssGen();$('#sc').innerHTML=ssRender(cur.tr,`Cvičná úloha ${5-cur.practice} / 4`)},900);return;
   }
   cur.n++;if(ok)cur.ok++;else cur.bad++;
@@ -931,6 +934,7 @@ function screenResults(){
   if(p.fatigue>=3)notes.push('Uvedl{|a} jsi únavu – ta prokazatelně snižuje hlavně pracovní paměť a rychlost. Skutečný výsledek může být o několik bodů vyšší.');
   if(p.exp==='často')notes.push('S IQ testy máš zkušenost – tzv. efekt nácviku může výsledek mírně nadhodnotit (studie uvádějí zhruba 2–6 bodů).');
   if(p.device!=='počítač')notes.push(`Test proběhl na zařízení „${p.device}“ – normy rychlostních úloh jsou proto upraveny, i tak může být rychlost mírně podhodnocená.`);
+  const rt=Object.keys(S.retaken||{});if(rt.length)notes.push('Opravené oddíly: <b>'+rt.map(id=>SECTIONS.find(x=>x.id===id).name).join(', ')+'</b>. Při opakování se výsledek obvykle mírně zlepší (efekt nácviku), takže celkové IQ může být lehce nadhodnocené.');
   if(p.env==='rušné')notes.push('Rušné prostředí snižuje výkon hlavně v pracovní paměti a rychlostních úlohách.');
   const totalMin=Math.round((Date.now()-S.startedAt)/60000);
 
@@ -993,8 +997,8 @@ function screenResults(){
     <div class="eyebrow">Subtesty</div>
     <h2>Detailní výsledky</h2>
     <p class="muted small">Vážené skóre 1–19 (průměr 10, SD 3) – stejná škála jako u subtestů WAIS. 8–12 je průměr.</p>
-    <div style="overflow-x:auto"><table class="sub"><thead><tr><th>Subtest</th><th>Hrubé skóre</th><th>Vážené</th><th></th></tr></thead><tbody>
-    ${Object.keys(SUBTESTS).map(s=>{const v=R.ss[s];return `<tr><td>${SUBTESTS[s].name}<div class="small muted">${INDEXES[SUBTESTS[s].idx].name}</div></td><td>${S.raw[s]||0}${SUBTESTS[s].max?' / '+SUBTESTS[s].max:''}</td><td><b>${v}</b></td><td><span class="ss">${Array.from({length:19},(_,k)=>`<i class="${k<v?'f':''}"></i>`).join('')}</span></td></tr>`}).join('')}
+    <div style="overflow-x:auto"><table class="sub"><thead><tr><th>Subtest</th><th>Hrubé skóre</th><th>Vážené</th><th></th><th></th></tr></thead><tbody>
+    ${Object.keys(SUBTESTS).map(s=>{const v=R.ss[s];return `<tr><td>${SUBTESTS[s].name}<div class="small muted">${INDEXES[SUBTESTS[s].idx].name}</div></td><td>${S.raw[s]||0}${SUBTESTS[s].max?' / '+SUBTESTS[s].max:''}</td><td><b>${v}</b></td><td><span class="ss">${Array.from({length:19},(_,k)=>`<i class="${k<v?'f':''}"></i>`).join('')}</span></td><td>${(S.retaken||{})[SEC_OF[s]]?'<span class="tag w" style="margin-right:6px">opraveno</span>':''}<button class="btn ghost" style="padding:5px 12px;font-size:.82rem" onclick="redoSection('${SEC_OF[s]}')">Opravit</button></td></tr>`}).join('')}
     </tbody></table></div>
     <h3 style="margin-top:24px">Analýza chyb a stylu řešení</h3>
     ${ea.map(x=>`<div class="insight">${g(x)}</div>`).join('')}
@@ -1027,6 +1031,12 @@ function screenResults(){
     <div class="note"><b>Důležité omezení:</b> Tento test nebyl standardizován na reprezentativním vzorku české populace – normy jsou orientační, odvozené z obtížnosti úloh a publikovaných výkonů v podobných testech. Výsledek ber jako kvalifikovaný odhad (typická odchylka od profesionálního testu může být ±10 bodů), ne jako psychologickou diagnózu. Přesné měření provádí pouze psycholog standardizovaným testem.</div>
   </div>
 
+  <div class="card">
+    <div class="eyebrow">Oprava</div>
+    <h2>Vrátit se k oddílu</h2>
+    <p class="small muted">Pokud jsi v některém oddílu nepochopil{|a} zadání, byl{|a} vyrušen{|a} nebo chceš odpovědi opravit, můžeš ho udělat znovu. U úloh se ti předvyplní původní odpovědi, u paměti a rychlosti se oddíl opakuje celý. Výsledky se pak přepočítají.</p>
+    <div class="row">${SECTIONS.map(x=>`<button class="btn ghost" style="padding:8px 14px;font-size:.9rem" onclick="redoSection('${x.id}')">${(S.retaken||{})[x.id]?'✓ ':''}${x.name}</button>`).join('')}</div>
+  </div>
   <div class="card center">
     <div class="row" style="justify-content:center">
       <button class="btn accent" onclick="copySummary()">📋 Kopírovat souhrn</button>
@@ -1041,11 +1051,13 @@ function copySummary(){
   const t=`NOUS – test inteligence\n${p.name}, ${p.age} let\n\nCelkové IQ (odhad): ${R.iq} – ${category(R.iq).l}\nGAI (uvažování): ${R.gai} · CPI (výkonnost): ${R.cpi}\n\n`+Object.keys(INDEXES).map(k=>`${INDEXES[k].name}: ${R.idx[k]}`).join('\n')+'\n\nSubtesty (vážené skóre 1–19):\n'+Object.keys(SUBTESTS).map(s=>`  ${SUBTESTS[s].name}: ${R.ss[s]} (hrubé ${S.raw[s]||0}${SUBTESTS[s].max?'/'+SUBTESTS[s].max:''})`).join('\n')+'\n\nOrientační odhad, nejde o klinickou diagnostiku.';
   try{navigator.clipboard.writeText(t).then(()=>toast('Souhrn zkopírován do schránky'),()=>toast('Kopírování se nezdařilo'))}catch(e){toast('Kopírování se nezdařilo')}
 }
+function redoSection(id){S.redo=true;const i=SECTIONS.findIndex(s=>s.id===id);document.querySelectorAll('.modal').forEach(x=>x.remove());sectionIntro(i)}
+const SEC_OF={analog:'analog',vocab:'vocab',matrix:'matrix',rotate:'rotate',series:'series',logic:'logic',dfwd:'digit',dbwd:'digit',ssearch:'ssearch',coding:'coding'};
 function restart(){S={p:null,step:0,raw:{},used:{},detail:{},startedAt:null};cur=null;screenWelcome()}
 
 /* debug: #demo shows results with simulated answers */
 function demo(){S={p:{name:'Demo',age:35,gender:'m',edu:'4',field:'inženýr',native:'ano',fatigue:2,exp:'nikdy',device:'počítač',env:'klidné'},step:9,raw:{analog:10,vocab:8,matrix:9,rotate:8,series:9,logic:8,dfwd:10,dbwd:8,ssearch:33,coding:41},used:{},detail:{},startedAt:Date.now()-33*60000};prepItems();
-  S.detail.logic={correct:LOGIC.map((x,k)=>k!==5)};S.detail.matrix={correct:MATS.map((m,k)=>k<9)};S.detail.series={correct:SERIES.map((x,k)=>k!==9)};S.detail.digit={maxF:7,maxB:5};S.detail.ssearch={ok:35,bad:2,n:37};screenResults()}
+  S.detail.logic={correct:LOGIC.map((x,k)=>k!==5)};S.detail.matrix={correct:MATS.map((m,k)=>k<9),ans:MATS.map((m,k)=>k<9?m.a:null)};S.detail.series={correct:SERIES.map((x,k)=>k!==9)};S.detail.digit={maxF:7,maxB:5};S.detail.ssearch={ok:35,bad:2,n:37};screenResults()}
 if(location.hash==='#demo')demo();else screenWelcome();
 </script>
 </body>
