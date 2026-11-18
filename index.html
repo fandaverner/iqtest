@@ -490,9 +490,25 @@ function setKeys(fn){if(keyH)document.removeEventListener('keydown',keyH);keyH=f
 window.addEventListener('beforeunload',e=>{if(S.step>0&&S.step<=SECTIONS.length){e.preventDefault();e.returnValue=''}});
 
 /* ============ SCREENS ============ */
-function screenWelcome(){
+/* ---- uložení postupu do prohlížeče ---- */
+const STORE='nous_iq_state_v1';
+function saveState(){if(location.hash==="#demo")return;try{const o={p:S.p,step:S.step,raw:S.raw,used:S.used,detail:S.detail,retaken:S.retaken||{},startedAt:S.startedAt,finishedAt:S.finishedAt||null};localStorage.setItem(STORE,JSON.stringify(o))}catch(e){}}
+function loadState(){try{const o=JSON.parse(localStorage.getItem(STORE)||'null');return o&&o.p?o:null}catch(e){return null}}
+function clearState(){try{localStorage.removeItem(STORE)}catch(e){}}
+const RAWKEY={digit:'dfwd'};
+function nextMissing(st){return SECTIONS.findIndex(x=>st.raw[RAWKEY[x.id]||x.id]===undefined)}
+function resumeSaved(){const o=loadState();if(!o)return screenWelcome(true);S={...o,redo:false};prepItems();const n=nextMissing(S);if(n<0)return screenResults();sectionIntro(n)}
+function newTest(){clearState();restartBare();screenIntake()}
+function screenWelcome(skipSaved){
   setTop(false);
-  app.innerHTML=`<div class="fade">
+  const sv=skipSaved?null:loadState();
+  let resume='';
+  if(sv){const n=nextMissing(sv);const done=n<0;
+    resume=`<div class="card" style="border:2px solid var(--accent)"><div class="eyebrow">Uložený test</div>
+    <h3>${esc(sv.p.name)}, ${done?'tvoje výsledky jsou uložené':'máš rozpracovaný test'}</h3>
+    <p class="small muted">${done?'Test máš dokončený – můžeš se vrátit k vyhodnocení a případně opravit jednotlivé oddíly.':'Hotovo '+n+' z '+SECTIONS.length+' oddílů. Pokračuješ oddílem „'+SECTIONS[n].name+'“ (rozpracovaný oddíl se začíná od začátku).'}</p>
+    <div class="row"><button class="btn accent" onclick="resumeSaved()">${done?'Zobrazit výsledky':'Pokračovat v testu'}</button><button class="btn ghost" onclick="newTest()">Začít nový test</button></div></div>`}
+  app.innerHTML=`<div class="fade">${resume}
   <div class="card">
     <div class="eyebrow">Kognitivní profil · 10 subtestů · cca 35 minut</div>
     <h1>NOUS<br><span style="font-weight:400;font-size:.55em">test inteligence založený na skutečných testech</span></h1>
@@ -553,7 +569,7 @@ function submitIntake(e){
   if(!name){$('#err').textContent='Vyplň prosím jméno.';return false}
   if(!(age>=12&&age<=99)){$('#err').textContent='Zadej věk mezi 12 a 99 lety.';return false}
   S={p:{name,age,gender:intake.gender,edu:$('#edu').value,field:$('#field').value.trim(),native:intake.native,fatigue:+intake.fatigue,exp:intake.exp,device:intake.device,env:intake.env},step:1,raw:{},used:{},detail:{},startedAt:Date.now()};
-  prepItems();
+  prepItems();saveState();
   sectionIntro(0);
   return false;
 }
@@ -660,9 +676,9 @@ function nextSection(msg){
   const i=SECTIONS.findIndex(s=>s.id===(cur&&cur.sec?cur.sec.id:''));
   cur=null;
   if(msg)toast(msg);
-  if(S.redo){S.redo=false;S.retaken=S.retaken||{};S.retaken[SECTIONS[i].id]=true;return screenResults()}
-  const n=i+1;S.step=n+1;
-  if(n>=SECTIONS.length)return screenResults();
+  if(S.redo){S.redo=false;S.retaken=S.retaken||{};S.retaken[SECTIONS[i].id]=true;saveState();return screenResults()}
+  const n=i+1;S.step=n+1;saveState();
+  if(n>=SECTIONS.length){S.finishedAt=S.finishedAt||Date.now();saveState();return screenResults()}
   sectionIntro(n);
 }
 
@@ -936,7 +952,7 @@ function screenResults(){
   if(p.device!=='počítač')notes.push(`Test proběhl na zařízení „${p.device}“ – normy rychlostních úloh jsou proto upraveny, i tak může být rychlost mírně podhodnocená.`);
   const rt=Object.keys(S.retaken||{});if(rt.length)notes.push('Opravené oddíly: <b>'+rt.map(id=>SECTIONS.find(x=>x.id===id).name).join(', ')+'</b>. Při opakování se výsledek obvykle mírně zlepší (efekt nácviku), takže celkové IQ může být lehce nadhodnocené.');
   if(p.env==='rušné')notes.push('Rušné prostředí snižuje výkon hlavně v pracovní paměti a rychlostních úlohách.');
-  const totalMin=Math.round((Date.now()-S.startedAt)/60000);
+  const totalMin=Math.round(((S.finishedAt||Date.now())-S.startedAt)/60000);
 
   const g=gx;
   const sw=(k,type)=>{const v=R.idx[k],i=INFO[k][lvl(v)];return `<div class="it"><b>${INDEXES[k].name} · ${v}</b><span class="small">${type==='s'?g(i.p[0]):g(i.m[0])}</span></div>`};
@@ -1053,12 +1069,13 @@ function copySummary(){
 }
 function redoSection(id){S.redo=true;const i=SECTIONS.findIndex(s=>s.id===id);document.querySelectorAll('.modal').forEach(x=>x.remove());sectionIntro(i)}
 const SEC_OF={analog:'analog',vocab:'vocab',matrix:'matrix',rotate:'rotate',series:'series',logic:'logic',dfwd:'digit',dbwd:'digit',ssearch:'ssearch',coding:'coding'};
-function restart(){S={p:null,step:0,raw:{},used:{},detail:{},startedAt:null};cur=null;screenWelcome()}
+function restartBare(){stopTimer();setKeys(null);S={p:null,step:0,raw:{},used:{},detail:{},startedAt:null};cur=null}
+function restart(){const m=document.createElement('div');m.className='modal';m.innerHTML=`<div class="card"><h3>Začít nový test?</h3><p>Uložené výsledky se smažou.</p><div class="row between"><button class="btn ghost" id="mback">Zpět</button><button class="btn accent" id="mok">Smazat a začít znovu</button></div></div>`;document.body.appendChild(m);$('#mback').onclick=()=>m.remove();$('#mok').onclick=()=>{m.remove();clearState();restartBare();screenWelcome(true)}}
 
 /* debug: #demo shows results with simulated answers */
 function demo(){S={p:{name:'Demo',age:35,gender:'m',edu:'4',field:'inženýr',native:'ano',fatigue:2,exp:'nikdy',device:'počítač',env:'klidné'},step:9,raw:{analog:10,vocab:8,matrix:9,rotate:8,series:9,logic:8,dfwd:10,dbwd:8,ssearch:33,coding:41},used:{},detail:{},startedAt:Date.now()-33*60000};prepItems();
   S.detail.logic={correct:LOGIC.map((x,k)=>k!==5)};S.detail.matrix={correct:MATS.map((m,k)=>k<9),ans:MATS.map((m,k)=>k<9?m.a:null)};S.detail.series={correct:SERIES.map((x,k)=>k!==9)};S.detail.digit={maxF:7,maxB:5};S.detail.ssearch={ok:35,bad:2,n:37};screenResults()}
-if(location.hash==='#demo')demo();else screenWelcome();
+if(location.hash==='#demo')demo();else{const sv=loadState();if(sv&&nextMissing(sv)<0)resumeSaved();else screenWelcome()}
 </script>
 </body>
 </html>
